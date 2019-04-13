@@ -176,6 +176,8 @@ public class SyncServie {
                     logger.info("[*] you've declined the invitation");
                     //TODO decline invitation
                 }
+            }else if(message.getMsgType() == MessageType.STATUSNOTIFY.getCode()){
+                logger.info("");
             }
 
         }

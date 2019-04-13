@@ -13,6 +13,14 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @ClassName WechatHttpService
+ * @Description 微信相关接口
+ * @Author chauncey
+ * @Date 19-4-10 下午6:24
+ * @Version 1.0
+ **/
+
 @Component
 public class WechatHttpService {
 

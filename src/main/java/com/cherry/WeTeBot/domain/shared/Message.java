@@ -37,6 +37,8 @@ public class Message {
     private int AppMsgType;
     @JsonProperty
     private int StatusNotifyCode;
+
+    //初始化在客户端打开对话的用户列表
     @JsonProperty
     private String StatusNotifyUserName;
     @JsonProperty

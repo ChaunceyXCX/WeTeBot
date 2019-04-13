@@ -8,8 +8,8 @@ import com.cherry.WeTeBot.enums.LoginCode;
 import com.cherry.WeTeBot.enums.StatusNotifyCode;
 import com.cherry.WeTeBot.exception.WechatException;
 import com.cherry.WeTeBot.exception.WechatQRExpiredException;
-import com.cherry.WeTeBot.utils.WechatUtils;
 import com.cherry.WeTeBot.utils.QRCodeUtils;
+import com.cherry.WeTeBot.utils.WechatUtils;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.WriterException;
 import org.slf4j.Logger;
@@ -22,6 +22,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.stream.Collectors;
+
+/**
+ * @ClassName LoginService
+ * @Description 登录微信时使用
+ * @Author chauncey
+ * @Date 19-4-10 下午6:24
+ * @Version 1.0
+ **/
 
 @Component
 public class LoginService {
@@ -174,3 +182,4 @@ public class LoginService {
         }
     }
 }
+

@@ -37,6 +37,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @ClassName WechatHttpServiceInternal
+ * @Description API封装
+ * @Author chauncey
+ * @Date 19-4-10 下午6:24
+ * @Version 1.0
+ **/
+
 @Component
 class WechatHttpServiceInternal {
 
