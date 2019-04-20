@@ -8,8 +8,9 @@ public class MessageUtils {
         if (content == null) {
             throw new IllegalArgumentException("content");
         }
-        return content.replaceAll("^(@([0-9]|[a-z])+):", "")
-                .replaceAll("<br/>", "\r\n");
+//        return content.replaceAll("^(@([0-9]|[a-z])+):", "")
+//                .replaceAll("<br/>", "\r\n");
+        return content.substring(71);
     }
 
     public static String getSenderOfChatRoomTextMessage(String content) {

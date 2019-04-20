@@ -25,12 +25,14 @@ public class MessageHandlerImpl implements MessageHandler {
     private WechatHttpService wechatHttpService;
 
     @Override
-    public void onReceivingChatRoomTextMessage(Message message) {
+    public void onReceivingChatRoomTextMessage(Message message) throws IOException {
         logger.info("onReceivingChatRoomTextMessage");
-        logger.info("from chatroom: " + message.getFromUserName());
+        logger.info("from chatroom: " + message.getToUserName() + "\n\t" + message.getFromUserName());
+        String content = MessageUtils.getChatRoomTextMessageContent(message.getContent());
+        message.setContent(content);
         logger.info("from person: " + MessageUtils.getSenderOfChatRoomTextMessage(message.getContent()));
-        logger.info("to: " + message.getToUserName());
-        logger.info("content:" + MessageUtils.getChatRoomTextMessageContent(message.getContent()));
+        logger.info("content:" + content);
+        replyMessage(message);
     }
 
     @Override
@@ -57,9 +59,9 @@ public class MessageHandlerImpl implements MessageHandler {
         logger.info("fullImageUrl:" + fullImageUrl);
 //        将图片保存在本地
         byte[] data = wechatHttpService.downloadImage(thumbImageUrl);
-        /*FileOutputStream fos = new FileOutputStream("thumb.jpg");
+        FileOutputStream fos = new FileOutputStream("thumb.jpg");
         fos.write(data);
-        fos.close();*/
+        fos.close();
     }
 
     @Override

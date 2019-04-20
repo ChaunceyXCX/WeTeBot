@@ -14,7 +14,7 @@ public interface MessageHandler {
      *
      * @param message 消息体
      */
-    void onReceivingChatRoomTextMessage(Message message);
+    void onReceivingChatRoomTextMessage(Message message) throws IOException;
 
     /**
      * 事件：收到群聊天图片消息

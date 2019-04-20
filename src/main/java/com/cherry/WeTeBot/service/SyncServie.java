@@ -36,6 +36,8 @@ public class SyncServie {
     @Value("${wechat.url.get_msg_img}")
     private String WECHAT_URL_GET_MSG_IMG;
 
+    private String myID = null;
+
     private final static String RED_PACKET_CONTENT = "收到红包，请在手机上查看";
 
     @PostConstruct
@@ -68,7 +70,7 @@ public class SyncServie {
             } else if (selector == Selector.UNKNOWN6.getCode()) {
                 sync();
             } else if (selector != Selector.NORMAL.getCode()) {
-                throw new WechatException("syncCheckResponse ret = " + retCode);
+                throw new WechatException("syncCheckResponse ret = " + retCode + "; selector = " + selector);
             }
         } else {
             throw new WechatException("syncCheckResponse selector = " + selector);
@@ -91,6 +93,14 @@ public class SyncServie {
         return syncResponse;
     }
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //接收好友邀请
+      * @Date 19-4-15 下午2:58
+      * @MethodName acceptFriendInvitation
+      * @Param [info]
+      * @return void
+      **/
     private void acceptFriendInvitation(RecommendInfo info) throws IOException, URISyntaxException {
         VerifyUser user = new VerifyUser();
         user.setValue(info.getUserName());
@@ -104,16 +114,14 @@ public class SyncServie {
         WechatUtils.checkBaseResponse(verifyUserResponse);
     }
 
-    private boolean isMessageFromIndividual(Message message) {
-        return message.getFromUserName() != null
-                && message.getFromUserName().startsWith("@")
-                && !message.getFromUserName().startsWith("@@");
-    }
-
-    private boolean isMessageFromChatRoom(Message message) {
-        return message.getFromUserName() != null && message.getFromUserName().startsWith("@@");
-    }
-
+    /**
+     * @Author https://github.com/ChaunceyCX
+     * @Description //收到新消息
+     * @Date 19-4-15 下午2:54
+     * @MethodName onNewMessage
+     * @Param []
+     * @return void
+     **/
     private void onNewMessage() throws IOException, URISyntaxException {
         SyncResponse syncResponse = sync();
         if (messageHandler == null) {
@@ -123,19 +131,32 @@ public class SyncServie {
             //文本消息
             if (message.getMsgType() == MessageType.TEXT.getCode()) {
                 cacheService.getContactNamesWithUnreadMessage().add(message.getFromUserName());
-                //个人
+                //个人 resive
                 if (isMessageFromIndividual(message)) {
+                    logger.info("info: the message from friend to me");
+                    messageHandler.onReceivingPrivateTextMessage(message);
+                }
+                //个人 sync
+                else if (isMessageFromIndividualSync(message)){
+                    logger.info("info: the message from myself to sync");
                     messageHandler.onReceivingPrivateTextMessage(message);
                 }
                 //群
                 else if (isMessageFromChatRoom(message)) {
+                    logger.info("info: the message from myself to sync");
+                    messageHandler.onReceivingChatRoomTextMessage(message);
+                }
+                //群 sync
+                else if (isMessageFromChatRoomSync(message)){
+                    logger.info("info: the message from myself to sync");
                     messageHandler.onReceivingChatRoomTextMessage(message);
                 }
                 //图片
             } else if (message.getMsgType() == MessageType.IMAGE.getCode()) {
                 cacheService.getContactNamesWithUnreadMessage().add(message.getFromUserName());
-                String fullImageUrl = String.format(WECHAT_URL_GET_MSG_IMG, cacheService.getHostUrl(), message.getMsgId(), cacheService.getsKey());
+                String fullImageUrl = String.format(WECHAT_URL_GET_MSG_IMG, cacheService.getHostUrl(), message.getMsgId(), cacheService.getsKey().replace("@","%40"));
                 String thumbImageUrl = fullImageUrl + "&type=slave";
+                logger.info(cacheService.getsKey());
                 //个人
                 if (isMessageFromIndividual(message)) {
                     messageHandler.onReceivingPrivateImageMessage(message, thumbImageUrl, fullImageUrl);
@@ -177,12 +198,83 @@ public class SyncServie {
                     //TODO decline invitation
                 }
             }else if(message.getMsgType() == MessageType.STATUSNOTIFY.getCode()){
-                logger.info("");
+                logger.info("login init");
+                logger.info("current userID: "+message.getFromUserName());
+                this.myID = message.getFromUserName();
             }
 
         }
     }
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //判断消息是否来自群同步
+      * @Date 19-4-15 下午6:53
+      * @MethodName isMessageFromChatRoomSync
+      * @Param [message]
+      * @return boolean
+      **/
+    private boolean isMessageFromChatRoomSync(Message message) {
+        return message.getFromUserName() != null
+                &&message.getFromUserName().startsWith("@")
+                && !message.getFromUserName().startsWith("@@")
+                && message.getToUserName().startsWith("@@");
+    }
+
+    /**
+     * @Author https://github.com/ChaunceyCX
+     * @Description 判断消息是否来自好友
+     * @Date 19-4-15 下午2:51
+     * @MethodName isMessageFromIndividual
+     * @Param [message]
+     * @return boolean
+     **/
+    private boolean isMessageFromIndividual(Message message) {
+        return message.getFromUserName() != null
+                && myID !=null
+                && !message.getFromUserName().equals(myID)
+                && message.getFromUserName().startsWith("@")
+                && !message.getFromUserName().startsWith("@@")
+                && message.getToUserName().startsWith("@")
+                && !message.getToUserName().startsWith("@@")
+                && !message.getToUserName().equals(message.getFromUserName())
+                && !message.getToUserName().startsWith("@@");
+    }
+
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //判断消息是否来自群
+      * @Date 19-4-15 下午2:52
+      * @MethodName isMessageFromChatRoom
+      * @Param [message]
+      * @return boolean
+      **/
+    private boolean isMessageFromChatRoom(Message message) {
+        return message.getFromUserName() != null && message.getFromUserName().startsWith("@@");
+    }
+
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //判断是否自己发送消息同步
+      * @Date 19-4-15 下午3:08
+      * @MethodName isMessageFromIndividualSync
+      * @Param [message]
+      * @return boolean
+      **/
+    private boolean isMessageFromIndividualSync(Message message) {
+        return message.getFromUserName()!=null
+                && myID !=null
+                && message.getFromUserName().equals(myID);
+    }
+
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //会话列表更新
+      * @Date 19-4-15 下午2:56
+      * @MethodName onContactsModified
+      * @Param [contacts]
+      * @return void
+      **/
     private void onContactsModified(Set<Contact> contacts) {
         Set<Contact> individuals = new HashSet<>();
         Set<Contact> chatRooms = new HashSet<>();
@@ -258,6 +350,14 @@ public class SyncServie {
         }
     }
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //删除会话列表
+      * @Date 19-4-15 下午2:57
+      * @MethodName onContactsDeleted
+      * @Param [contacts]
+      * @return void
+      **/
     private void onContactsDeleted(Set<Contact> contacts) {
         Set<Contact> individuals = new HashSet<>();
         Set<Contact> chatRooms = new HashSet<>();

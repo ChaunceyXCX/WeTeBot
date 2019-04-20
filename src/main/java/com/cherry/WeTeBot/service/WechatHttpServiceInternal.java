@@ -18,6 +18,8 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.cookie.BasicClientCookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -106,6 +108,8 @@ class WechatHttpServiceInternal {
     private String BROWSER_DEFAULT_ACCEPT_LANGUAGE = "en,zh-CN;q=0.8,zh;q=0.6,ja;q=0.4,zh-TW;q=0.2";
     private String BROWSER_DEFAULT_ACCEPT_ENCODING = "gzip, deflate, br";
 
+    private static final Logger logger = LoggerFactory.getLogger(WechatHttpServiceInternal.class);
+
     @Autowired
     WechatHttpServiceInternal(RestTemplate restTemplate, @Value("${wechat.ua}") String BROWSER_DEFAULT_USER_AGENT) {
         this.restTemplate = restTemplate;
@@ -191,6 +195,7 @@ class WechatHttpServiceInternal {
      */
     byte[] getQR(String uuid) {
         final String url = WECHAT_URL_QRCODE + "/" + uuid;
+        logger.info("qrurl: "+url);
         HttpHeaders customHeader = new HttpHeaders();
         customHeader.set(HttpHeaders.ACCEPT, "image/webp,image/apng,image/*,*/*;q=0.8");
         customHeader.set(HttpHeaders.REFERER, WECHAT_URL_ENTRY);
