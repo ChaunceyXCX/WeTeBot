@@ -23,7 +23,7 @@ public interface MessageHandler {
      * @param thumbImageUrl 图片缩略图链接
      * @param fullImageUrl  图片完整图链接
      */
-    void onReceivingChatRoomImageMessage(Message message, String thumbImageUrl, String fullImageUrl);
+    void onReceivingChatRoomImageMessage(Message message, String thumbImageUrl, String fullImageUrl, String myID);
 
     /**
      * 事件：收到个人聊天文本消息
@@ -39,7 +39,7 @@ public interface MessageHandler {
      * @param thumbImageUrl 图片缩略图链接
      * @param fullImageUrl  图片完整图链接
      */
-    void onReceivingPrivateImageMessage(Message message, String thumbImageUrl, String fullImageUrl) throws IOException;
+    void onReceivingPrivateImageMessage(Message message, String thumbImageUrl, String fullImageUrl ,String myID);
 
     /**
      * 事件：收到加好友邀请

@@ -20,7 +20,7 @@ public class DefaultMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void onReceivingChatRoomImageMessage(Message message, String thumbImageUrl, String fullImageUrl) {
+    public void onReceivingChatRoomImageMessage(Message message, String thumbImageUrl, String fullImageUrl, String myID) {
         logger.info("onReceivingChatRoomImageMessage");
     }
 
@@ -30,7 +30,7 @@ public class DefaultMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void onReceivingPrivateImageMessage(Message message, String thumbImageUrl, String fullImageUrl) throws IOException {
+    public void onReceivingPrivateImageMessage(Message message, String thumbImageUrl, String fullImageUrl, String myID) {
         logger.info("onReceivingPrivateImageMessage");
     }
 

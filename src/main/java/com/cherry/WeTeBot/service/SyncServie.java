@@ -159,11 +159,11 @@ public class SyncServie {
                 logger.info(cacheService.getsKey());
                 //个人
                 if (isMessageFromIndividual(message)) {
-                    messageHandler.onReceivingPrivateImageMessage(message, thumbImageUrl, fullImageUrl);
+                    messageHandler.onReceivingPrivateImageMessage(message, thumbImageUrl, fullImageUrl, myID);
                 }
                 //群
                 else if (isMessageFromChatRoom(message)) {
-                    messageHandler.onReceivingChatRoomImageMessage(message, thumbImageUrl, fullImageUrl);
+                    messageHandler.onReceivingChatRoomImageMessage(message, thumbImageUrl, fullImageUrl, myID);
                 }
             }
             //系统消息

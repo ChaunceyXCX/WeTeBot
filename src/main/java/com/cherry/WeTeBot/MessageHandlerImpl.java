@@ -3,6 +3,7 @@ package com.cherry.WeTeBot;
 import com.cherry.WeTeBot.domain.shared.*;
 import com.cherry.WeTeBot.service.MessageHandler;
 import com.cherry.WeTeBot.service.WechatHttpService;
+import com.cherry.WeTeBot.utils.ImgSaveUtils;
 import com.cherry.WeTeBot.utils.MessageUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -10,9 +11,9 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,6 +24,8 @@ public class MessageHandlerImpl implements MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandlerImpl.class);
     @Autowired
     private WechatHttpService wechatHttpService;
+    @Value("${img.root-path}")
+    private String imgRootPath;
 
     @Override
     public void onReceivingChatRoomTextMessage(Message message) throws IOException {
@@ -36,10 +39,16 @@ public class MessageHandlerImpl implements MessageHandler {
     }
 
     @Override
-    public void onReceivingChatRoomImageMessage(Message message, String thumbImageUrl, String fullImageUrl) {
+    public void onReceivingChatRoomImageMessage(Message message, String thumbImageUrl, String fullImageUrl, String myID) {
         logger.info("onReceivingChatRoomImageMessage");
         logger.info("thumbImageUrl:" + thumbImageUrl);
         logger.info("fullImageUrl:" + fullImageUrl);
+        byte[] datas = wechatHttpService.downloadImage(thumbImageUrl);
+        try {
+            logger.info("imgSavePath: "+ ImgSaveUtils.saveImg(message,myID,datas,imgRootPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -53,15 +62,17 @@ public class MessageHandlerImpl implements MessageHandler {
     }
 
     @Override
-    public void onReceivingPrivateImageMessage(Message message, String thumbImageUrl, String fullImageUrl) throws IOException {
+    public void onReceivingPrivateImageMessage(Message message, String thumbImageUrl, String fullImageUrl, String myID) {
         logger.info("onReceivingPrivateImageMessage");
         logger.info("thumbImageUrl:" + thumbImageUrl);
         logger.info("fullImageUrl:" + fullImageUrl);
 //        将图片保存在本地
-        byte[] data = wechatHttpService.downloadImage(thumbImageUrl);
-        FileOutputStream fos = new FileOutputStream("thumb.jpg");
-        fos.write(data);
-        fos.close();
+        byte[] datas = wechatHttpService.downloadImage(thumbImageUrl);
+        try {
+            logger.info("imgSavePath: "+ ImgSaveUtils.saveImg(message,myID,datas,imgRootPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
