@@ -149,7 +149,7 @@ public class SyncServie {
                 //群 sync
                 else if (isMessageFromChatRoomSync(message)){
                     logger.info("info: the message from myself to sync");
-                    messageHandler.onReceivingChatRoomTextMessage(message);
+                    messageHandler.onReceivingChatRoomTextMessageSync(message);
                 }
                 //图片
             } else if (message.getMsgType() == MessageType.IMAGE.getCode()) {
@@ -161,9 +161,17 @@ public class SyncServie {
                 if (isMessageFromIndividual(message)) {
                     messageHandler.onReceivingPrivateImageMessage(message, thumbImageUrl, fullImageUrl, myID);
                 }
+                //个人sync
+                else if(isMessageFromIndividualSync(message)){
+                    messageHandler.onReceivingPrivateImageMessage(message, thumbImageUrl, fullImageUrl, myID);
+                }
                 //群
                 else if (isMessageFromChatRoom(message)) {
                     messageHandler.onReceivingChatRoomImageMessage(message, thumbImageUrl, fullImageUrl, myID);
+                }
+                //群sync
+                else if (isMessageFromChatRoomSync(message)){
+                    messageHandler.onReceivingChatRoomImageMessage(message,thumbImageUrl,fullImageUrl,myID);
                 }
             }
             //系统消息
@@ -264,7 +272,9 @@ public class SyncServie {
     private boolean isMessageFromIndividualSync(Message message) {
         return message.getFromUserName()!=null
                 && myID !=null
-                && message.getFromUserName().equals(myID);
+                && message.getFromUserName().equals(myID)
+                && message.getToUserName().startsWith("@")
+                && !message.getToUserName().startsWith("@@");
     }
 
     /**

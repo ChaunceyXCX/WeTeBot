@@ -153,6 +153,20 @@ public class MessageHandlerImpl implements MessageHandler {
         }
     }
 
+    @Override
+    public void onReceivingChatRoomTextMessageSync(Message message) {
+        logger.info("onReceivingChatRoomTextMessageSync");
+        logger.info("from chatroom: " + message.getToUserName() + "\n\t" + message.getFromUserName());
+        logger.info("from person: " + MessageUtils.getSenderOfChatRoomTextMessage(message.getContent()));
+        logger.info("content:" + message.getContent());
+        try {
+            replyMessage(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void replyMessage(Message message) throws IOException {
         wechatHttpService.sendText(message.getFromUserName(), message.getContent());
     }

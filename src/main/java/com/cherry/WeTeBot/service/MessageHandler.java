@@ -113,4 +113,6 @@ public interface MessageHandler {
      * @param contact 发红包的个人或者群
      */
     void onRedPacketReceived(Contact contact);
+
+    void onReceivingChatRoomTextMessageSync(Message message);
 }

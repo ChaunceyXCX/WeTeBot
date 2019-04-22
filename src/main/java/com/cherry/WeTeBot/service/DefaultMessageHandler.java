@@ -84,4 +84,9 @@ public class DefaultMessageHandler implements MessageHandler {
     public void onRedPacketReceived(Contact contact) {
         logger.info("onRedPacketReceived");
     }
+
+    @Override
+    public void onReceivingChatRoomTextMessageSync(Message message) {
+        logger.info("onReceivingChatRoomTextMessageSync");
+    }
 }
