@@ -1,7 +1,7 @@
 package com.cherry.WeTeBot.domain.response;
 
+import com.cherry.WeTeBot.component.*;
 import com.cherry.WeTeBot.domain.response.component.WechatHttpResponseBase;
-import com.cherry.WeTeBot.domain.shared.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -26,15 +26,15 @@ public class SyncResponse extends WechatHttpResponseBase {
     @JsonProperty
     private Set<Contact> ModChatRoomMemberList;
     @JsonProperty
-    private com.cherry.WeTeBot.domain.shared.Profile Profile;
+    private com.cherry.WeTeBot.component.Profile Profile;
     @JsonProperty
     private int ContinueFlag;
     @JsonProperty
-    private com.cherry.WeTeBot.domain.shared.SyncKey SyncKey;
+    private com.cherry.WeTeBot.component.SyncKey SyncKey;
     @JsonProperty
     private String SKey;
     @JsonProperty
-    private com.cherry.WeTeBot.domain.shared.SyncCheckKey SyncCheckKey;
+    private com.cherry.WeTeBot.component.SyncCheckKey SyncCheckKey;
 
     public int getAddMsgCount() {
         return AddMsgCount;

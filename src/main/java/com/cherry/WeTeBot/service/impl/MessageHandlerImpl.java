@@ -1,9 +1,9 @@
-package com.cherry.WeTeBot;
+package com.cherry.WeTeBot.service.impl;
 
-import com.cherry.WeTeBot.domain.shared.*;
+import com.cherry.WeTeBot.component.*;
 import com.cherry.WeTeBot.service.MessageHandler;
 import com.cherry.WeTeBot.service.WechatHttpService;
-import com.cherry.WeTeBot.utils.ImgSaveUtils;
+import com.cherry.WeTeBot.utils.FileUtils;
 import com.cherry.WeTeBot.utils.MessageUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -45,7 +45,7 @@ public class MessageHandlerImpl implements MessageHandler {
         logger.info("fullImageUrl:" + fullImageUrl);
         byte[] datas = wechatHttpService.downloadImage(thumbImageUrl);
         try {
-            logger.info("imgSavePath: "+ ImgSaveUtils.saveImg(message,myID,datas,imgRootPath));
+            logger.info("imgSavePath: "+ FileUtils.saveImg(message,myID,datas,imgRootPath));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,7 +69,7 @@ public class MessageHandlerImpl implements MessageHandler {
 //        将图片保存在本地
         byte[] datas = wechatHttpService.downloadImage(thumbImageUrl);
         try {
-            logger.info("imgSavePath: "+ ImgSaveUtils.saveImg(message,myID,datas,imgRootPath));
+            logger.info("imgSavePath: "+ FileUtils.saveImg(message,myID,datas,imgRootPath));
         } catch (IOException e) {
             e.printStackTrace();
         }

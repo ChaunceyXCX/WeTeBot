@@ -1,11 +1,7 @@
-package com.cherry.WeTeBot.service;
+package com.cherry.WeTeBot.component;
 
-import com.cherry.WeTeBot.domain.shared.Owner;
-import com.cherry.WeTeBot.domain.shared.SyncCheckKey;
-import com.cherry.WeTeBot.domain.shared.SyncKey;
 import com.cherry.WeTeBot.utils.DeviceIdGenerator;
 import com.cherry.WeTeBot.domain.request.component.BaseRequest;
-import com.cherry.WeTeBot.domain.shared.Contact;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -20,7 +16,7 @@ import java.util.Set;
  **/
 
 @Component
-public class CacheService {
+public class WeChat {
 
     public void reset() {
         this.hostUrl = null;
@@ -45,6 +41,7 @@ public class CacheService {
     private String hostUrl;
     private String syncUrl;
     private String fileUrl;
+    private String redirectUrl;
     private String passTicket;
     private BaseRequest baseRequest;
     private Owner owner;
@@ -53,12 +50,38 @@ public class CacheService {
     private String sKey;
     private String uin;
     private String sid;
+    private Cookies cookies;
+    private ChatRoomDescription[] chatRoomDescriptions;
 
     private Set<Contact> individuals = new HashSet<>();
     private Set<Contact> mediaPlatforms = new HashSet<>();
     private Set<Contact> chatRooms = new HashSet<>();
 
     private Set<String> contactNamesWithUnreadMessage = new HashSet<>();
+
+    public ChatRoomDescription[] getChatRoomDescriptions() {
+        return chatRoomDescriptions;
+    }
+
+    public void setChatRoomDescriptions(ChatRoomDescription[] chatRoomDescriptions) {
+        this.chatRoomDescriptions = chatRoomDescriptions;
+    }
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+
+    public Cookies getCookies() {
+        return cookies;
+    }
+
+    public void setCookies(Cookies cookies) {
+        this.cookies = cookies;
+    }
 
     public boolean isAlive() {
         return alive;

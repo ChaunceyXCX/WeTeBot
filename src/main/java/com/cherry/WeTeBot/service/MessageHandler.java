@@ -1,9 +1,9 @@
 package com.cherry.WeTeBot.service;
 
-import com.cherry.WeTeBot.domain.shared.ChatRoomMember;
-import com.cherry.WeTeBot.domain.shared.Contact;
-import com.cherry.WeTeBot.domain.shared.Message;
-import com.cherry.WeTeBot.domain.shared.RecommendInfo;
+import com.cherry.WeTeBot.component.ChatRoomMember;
+import com.cherry.WeTeBot.component.Contact;
+import com.cherry.WeTeBot.component.Message;
+import com.cherry.WeTeBot.component.RecommendInfo;
 
 import java.io.IOException;
 import java.util.Set;
@@ -114,5 +114,15 @@ public interface MessageHandler {
      */
     void onRedPacketReceived(Contact contact);
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description // 自己在群里面发送的消息同步,因为文本内容分不同所以做单独处理
+      * @Date 下午4:45 19-4-22
+      * @Param [message]
+      * @return void
+      **/
+
     void onReceivingChatRoomTextMessageSync(Message message);
+
+
 }

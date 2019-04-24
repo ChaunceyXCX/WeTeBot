@@ -1,4 +1,4 @@
-package com.cherry.WeTeBot.domain.shared;
+package com.cherry.WeTeBot.component;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -198,11 +198,11 @@ public class Message {
         StatusNotifyUserName = statusNotifyUserName;
     }
 
-    public com.cherry.WeTeBot.domain.shared.RecommendInfo getRecommendInfo() {
+    public com.cherry.WeTeBot.component.RecommendInfo getRecommendInfo() {
         return RecommendInfo;
     }
 
-    public void setRecommendInfo(com.cherry.WeTeBot.domain.shared.RecommendInfo recommendInfo) {
+    public void setRecommendInfo(com.cherry.WeTeBot.component.RecommendInfo recommendInfo) {
         RecommendInfo = recommendInfo;
     }
 
@@ -214,11 +214,11 @@ public class Message {
         ForwardFlag = forwardFlag;
     }
 
-    public com.cherry.WeTeBot.domain.shared.AppInfo getAppInfo() {
+    public com.cherry.WeTeBot.component.AppInfo getAppInfo() {
         return AppInfo;
     }
 
-    public void setAppInfo(com.cherry.WeTeBot.domain.shared.AppInfo appInfo) {
+    public void setAppInfo(com.cherry.WeTeBot.component.AppInfo appInfo) {
         AppInfo = appInfo;
     }
 

@@ -2,7 +2,7 @@ package com.cherry.WeTeBot.enums;
 
 public enum Selector {
     /**
-     * 默认值
+     * 默认值,无事件
      */
     NORMAL(0),
     /**
@@ -13,14 +13,21 @@ public enum Selector {
      * 新消息
      */
     NEW_MESSAGE(2),
+
+    UNKNOWN3(3),
+
     /**
+     * 通讯录更新
      * 保存群聊到通讯录
      * 修改群名称
      * 新增或删除联系人
      * 群聊成员数目变化
      */
+
     CONTACT_UPDATED(4),
+    // 可能是红包
     UNKNOWN6(6),
+    // 手机上操作了微信
     ENTER_LEAVE_CHAT(7);
 
     private final int code;

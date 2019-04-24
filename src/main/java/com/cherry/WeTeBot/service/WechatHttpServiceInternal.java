@@ -1,9 +1,9 @@
 package com.cherry.WeTeBot.service;
 
+import com.cherry.WeTeBot.component.*;
 import com.cherry.WeTeBot.domain.request.*;
 import com.cherry.WeTeBot.domain.request.component.BaseRequest;
 import com.cherry.WeTeBot.domain.response.*;
-import com.cherry.WeTeBot.domain.shared.*;
 import com.cherry.WeTeBot.enums.*;
 import com.cherry.WeTeBot.exception.WechatException;
 import com.cherry.WeTeBot.utils.DeviceIdGenerator;
@@ -195,7 +195,6 @@ class WechatHttpServiceInternal {
      */
     byte[] getQR(String uuid) {
         final String url = WECHAT_URL_QRCODE + "/" + uuid;
-        logger.info("qrurl: "+url);
         HttpHeaders customHeader = new HttpHeaders();
         customHeader.set(HttpHeaders.ACCEPT, "image/webp,image/apng,image/*,*/*;q=0.8");
         customHeader.set(HttpHeaders.REFERER, WECHAT_URL_ENTRY);
@@ -466,6 +465,14 @@ class WechatHttpServiceInternal {
         return jsonMapper.readValue(WechatUtils.textDecode(responseEntity.getBody()), SyncResponse.class);
     }
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //同意一个好友请求
+      * @Date 下午5:00 19-4-22
+      * @Param [hostUrl, baseRequest, passTicket, verifyUsers]
+      * @return com.cherry.WeTeBot.domain.response.VerifyUserResponse
+      **/
+
     VerifyUserResponse acceptFriend(String hostUrl, BaseRequest baseRequest, String passTicket, VerifyUser[] verifyUsers) throws IOException, URISyntaxException {
         final int opCode = VerifyUserOPCode.VERIFYOK.getCode();
         final int[] sceneList = new int[]{AddScene.WEB.getCode()};
@@ -490,6 +497,14 @@ class WechatHttpServiceInternal {
         return jsonMapper.readValue(WechatUtils.textDecode(responseEntity.getBody()), VerifyUserResponse.class);
     }
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //发送文本消息
+      * @Date 下午5:01 19-4-22
+      * @Param [hostUrl, baseRequest, content, fromUserName, toUserName]
+      * @return com.cherry.WeTeBot.domain.response.SendMsgResponse
+      **/
+
     SendMsgResponse sendText(String hostUrl, BaseRequest baseRequest, String content, String fromUserName, String toUserName) throws IOException {
         final int scene = 0;
         final String rnd = String.valueOf(System.currentTimeMillis() * 10);
@@ -512,6 +527,14 @@ class WechatHttpServiceInternal {
         return jsonMapper.readValue(WechatUtils.textDecode(responseEntity.getBody()), SendMsgResponse.class);
     }
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //设置好友昵称
+      * @Date 下午5:01 19-4-22
+      * @Param [hostUrl, baseRequest, newAlias, userName]
+      * @return com.cherry.WeTeBot.domain.response.OpLogResponse
+      **/
+
     OpLogResponse setAlias(String hostUrl, BaseRequest baseRequest, String newAlias, String userName) throws IOException {
         final int cmdId = OpLogCmdId.MODREMARKNAME.getCode();
         final String url = String.format(WECHAT_URL_OP_LOG, hostUrl);
@@ -526,6 +549,14 @@ class WechatHttpServiceInternal {
                 = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(request, customHeader), String.class);
         return jsonMapper.readValue(WechatUtils.textDecode(responseEntity.getBody()), OpLogResponse.class);
     }
+
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //创建群
+      * @Date 下午5:01 19-4-22
+      * @Param [hostUrl, baseRequest, userNames, topic]
+      * @return com.cherry.WeTeBot.domain.response.CreateChatRoomResponse
+      **/
 
     CreateChatRoomResponse createChatRoom(String hostUrl, BaseRequest baseRequest, String[] userNames, String topic) throws IOException {
         String rnd = String.valueOf(System.currentTimeMillis());
@@ -547,6 +578,14 @@ class WechatHttpServiceInternal {
         return jsonMapper.readValue(WechatUtils.textDecode(responseEntity.getBody()), CreateChatRoomResponse.class);
     }
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //删除群成员(群管理员)
+      * @Date 下午5:02 19-4-22
+      * @Param [hostUrl, baseRequest, chatRoomUserName, userName]
+      * @return com.cherry.WeTeBot.domain.response.DeleteChatRoomMemberResponse
+      **/
+
     DeleteChatRoomMemberResponse deleteChatRoomMember(String hostUrl, BaseRequest baseRequest, String chatRoomUserName, String userName) throws IOException {
         final String url = String.format(WECHAT_URL_DELETE_CHATROOM_MEMBER, hostUrl);
         DeleteChatRoomMemberRequest request = new DeleteChatRoomMemberRequest();
@@ -560,6 +599,14 @@ class WechatHttpServiceInternal {
         return jsonMapper.readValue(WechatUtils.textDecode(responseEntity.getBody()), DeleteChatRoomMemberResponse.class);
     }
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //添加群成员
+      * @Date 下午5:02 19-4-22
+      * @Param [hostUrl, baseRequest, chatRoomUserName, userName]
+      * @return com.cherry.WeTeBot.domain.response.AddChatRoomMemberResponse
+      **/
+
     AddChatRoomMemberResponse addChatRoomMember(String hostUrl, BaseRequest baseRequest, String chatRoomUserName, String userName) throws IOException {
         final String url = String.format(WECHAT_URL_ADD_CHATROOM_MEMBER, hostUrl);
         AddChatRoomMemberRequest request = new AddChatRoomMemberRequest();
@@ -572,6 +619,14 @@ class WechatHttpServiceInternal {
                 = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(request, customHeader), String.class);
         return jsonMapper.readValue(WechatUtils.textDecode(responseEntity.getBody()), AddChatRoomMemberResponse.class);
     }
+
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //下载图片,获取图片字节数组
+      * @Date 下午5:02 19-4-22
+      * @Param [url]
+      * @return byte[]
+      **/
 
     byte[] downloadImage(String url) {
         HttpHeaders customHeader = new HttpHeaders();
@@ -597,6 +652,14 @@ class WechatHttpServiceInternal {
             store.addCookie(cookie);
         });
     }
+
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //创建post请求头
+      * @Date 下午5:04 19-4-22
+      * @Param []
+      * @return org.springframework.http.HttpHeaders
+      **/
 
     private HttpHeaders createPostCustomHeader() {
         HttpHeaders customHeader = new HttpHeaders();

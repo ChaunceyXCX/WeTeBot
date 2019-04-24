@@ -2,7 +2,7 @@ package com.cherry.WeTeBot.domain.response;
 
 
 import com.cherry.WeTeBot.domain.response.component.WechatHttpResponseBase;
-import com.cherry.WeTeBot.domain.shared.ChatRoomMember;
+import com.cherry.WeTeBot.component.ChatRoomMember;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

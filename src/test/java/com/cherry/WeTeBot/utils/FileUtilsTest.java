@@ -20,13 +20,13 @@ import java.net.ProtocolException;
 import java.net.URL;
 
 /**
- * @ClassName ImgSaveUtilsTest
+ * @ClassName FileUtilsTest
  * @Description TODO
  * @Author https://github.com/ChaunceyCX
  * @Date 19-4-20 下午5:32
  * @Version 1.0
  **/
-public class ImgSaveUtilsTest {
+public class FileUtilsTest {
 
     @Autowired
     RestTemplate restTemplate;
@@ -73,10 +73,10 @@ public class ImgSaveUtilsTest {
 
     @Test
     public void fileCheck(){
-        ImgSaveUtils imgSaveUtils = new ImgSaveUtils();
-        System.out.println(imgSaveUtils.isPathExis("@xxx"));
+        FileUtils fileUtils = new FileUtils();
+        System.out.println(fileUtils.isPathExis("@xxx"));
         System.out.println("...............");
-        System.out.println(imgSaveUtils.isPathExis("@xxx"));
+        System.out.println(fileUtils.isPathExis("@xxx"));
 
     }
 }

@@ -1,10 +1,10 @@
-package com.cherry.WeTeBot.domain.shared;
+package com.cherry.WeTeBot.component;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SyncKeyPair {
+public class SyncCheckKeyPair {
     @JsonProperty
     private int Key;
     @JsonProperty

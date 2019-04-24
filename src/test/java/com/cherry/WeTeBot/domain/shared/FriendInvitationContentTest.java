@@ -1,5 +1,6 @@
 package com.cherry.WeTeBot.domain.shared;
 
+import com.cherry.WeTeBot.component.FriendInvitationContent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.text.StringEscapeUtils;

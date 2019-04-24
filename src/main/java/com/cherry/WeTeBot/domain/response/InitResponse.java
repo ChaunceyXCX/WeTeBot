@@ -1,10 +1,10 @@
 package com.cherry.WeTeBot.domain.response;
 
 import com.cherry.WeTeBot.domain.response.component.WechatHttpResponseBase;
-import com.cherry.WeTeBot.domain.shared.Contact;
-import com.cherry.WeTeBot.domain.shared.MPSubscription;
-import com.cherry.WeTeBot.domain.shared.Owner;
-import com.cherry.WeTeBot.domain.shared.SyncKey;
+import com.cherry.WeTeBot.component.Contact;
+import com.cherry.WeTeBot.component.MPSubscription;
+import com.cherry.WeTeBot.component.Owner;
+import com.cherry.WeTeBot.component.SyncKey;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,7 +17,7 @@ public class InitResponse extends WechatHttpResponseBase {
     @JsonProperty
     private Set<Contact> ContactList;
     @JsonProperty
-    private com.cherry.WeTeBot.domain.shared.SyncKey SyncKey;
+    private com.cherry.WeTeBot.component.SyncKey SyncKey;
     @JsonProperty
     private Owner User;
     @JsonProperty

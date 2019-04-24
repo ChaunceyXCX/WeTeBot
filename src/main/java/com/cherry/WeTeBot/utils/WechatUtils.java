@@ -1,7 +1,7 @@
 package com.cherry.WeTeBot.utils;
 
 import com.cherry.WeTeBot.domain.response.component.WechatHttpResponseBase;
-import com.cherry.WeTeBot.domain.shared.Contact;
+import com.cherry.WeTeBot.component.Contact;
 import com.cherry.WeTeBot.exception.WechatException;
 
 import java.nio.charset.StandardCharsets;

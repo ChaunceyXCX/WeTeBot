@@ -28,7 +28,7 @@ After scanning and confirming login
 ![alt text](https://github.com/kanjielu/jeeves/blob/master/images/login-process-diagram.png?raw=true "Login process diagram")
 
 ### Example
-`com.cherry.WeTeBot.MessageHandlerImpl` is provided as an example of jeeves. You can modify the code in `MessageHandlerImpl` yourself or create another Spring Bean of `MessageHandler` to meet your requirements.
+`com.cherry.WeTeBot.service.impl.MessageHandlerImpl` is provided as an example of jeeves. You can modify the code in `MessageHandlerImpl` yourself or create another Spring Bean of `MessageHandler` to meet your requirements.
 
 The default behaviors that are set in `MessageHandlerImpl` are:
 * Auto-save thumb images in image messages to local disk.

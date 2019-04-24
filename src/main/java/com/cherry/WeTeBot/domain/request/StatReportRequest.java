@@ -1,7 +1,7 @@
 package com.cherry.WeTeBot.domain.request;
 
 import com.cherry.WeTeBot.domain.request.component.BaseRequest;
-import com.cherry.WeTeBot.domain.shared.StatReport;
+import com.cherry.WeTeBot.component.StatReport;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

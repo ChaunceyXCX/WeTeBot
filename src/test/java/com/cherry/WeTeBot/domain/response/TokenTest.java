@@ -1,6 +1,6 @@
 package com.cherry.WeTeBot.domain.response;
 
-import com.cherry.WeTeBot.domain.shared.Token;
+import com.cherry.WeTeBot.component.Token;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.junit.Assert;

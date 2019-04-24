@@ -1,7 +1,7 @@
 package com.cherry.WeTeBot.domain.request;
 
 import com.cherry.WeTeBot.domain.request.component.BaseRequest;
-import com.cherry.WeTeBot.domain.shared.SyncKey;
+import com.cherry.WeTeBot.component.SyncKey;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
