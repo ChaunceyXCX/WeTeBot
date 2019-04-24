@@ -52,12 +52,21 @@ public class WeChat {
     private String sid;
     private Cookies cookies;
     private ChatRoomDescription[] chatRoomDescriptions;
+    private Long maxAge;
 
     private Set<Contact> individuals = new HashSet<>();
     private Set<Contact> mediaPlatforms = new HashSet<>();
     private Set<Contact> chatRooms = new HashSet<>();
 
     private Set<String> contactNamesWithUnreadMessage = new HashSet<>();
+
+    public Long getMaxAge() {
+        return maxAge;
+    }
+
+    public void setMaxAge(Long maxAge) {
+        this.maxAge = maxAge;
+    }
 
     public ChatRoomDescription[] getChatRoomDescriptions() {
         return chatRoomDescriptions;

@@ -23,9 +23,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URI;
@@ -72,8 +76,6 @@ class WechatHttpServiceInternal {
     private String WECHAT_URL_GET_CONTACT;
     @Value("${wechat.url.send_msg}")
     private String WECHAT_URL_SEND_MSG;
-    @Value("${wechat.url.upload_media}")
-    private String WECHAT_URL_UPLOAD_MEDIA;
     @Value("${wechat.url.get_msg_img}")
     private String WECHAT_URL_GET_MSG_IMG;
     @Value("${wechat.url.get_voice}")
@@ -98,6 +100,8 @@ class WechatHttpServiceInternal {
     private String WECHAT_URL_DELETE_CHATROOM_MEMBER;
     @Value("${wechat.url.add_chatroom_member}")
     private String WECHAT_URL_ADD_CHATROOM_MEMBER;
+    @Value("wechat.url.upload_media")
+    private String WECHAT_URL_UPLOAD_MEDIA;
 
     private final RestTemplate restTemplate;
     private final HttpHeaders postHeader;
@@ -260,7 +264,10 @@ class WechatHttpServiceInternal {
                 = restTemplate.exchange(redirectUrl, HttpMethod.GET, new HttpEntity<>(customHeader), String.class);
         String xmlString = responseEntity.getBody();
         ObjectMapper xmlMapper = new XmlMapper();
-        return xmlMapper.readValue(xmlString, Token.class);
+        Token token = xmlMapper.readValue(xmlString, Token.class);
+        token.setCookies(responseEntity.getHeaders().getValuesAsList("Set-Cookie"));
+        token.setStrictTransportSecurity(responseEntity.getHeaders().getValuesAsList("Strict-Transport-Security"));
+        return token;
     }
 
     /**
@@ -667,4 +674,49 @@ class WechatHttpServiceInternal {
         customHeader.set(HttpHeaders.REFERER, this.refererValue);
         return customHeader;
     }
+
+
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //新加入的接口都使用webclient
+      * @Date 下午7:16 19-4-24
+      * @Param [weChat]
+      * @return com.cherry.WeTeBot.component.FileUpload
+      **/
+
+    WebClient webClient = WebClient.builder()
+            .defaultHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36")
+            .defaultHeader("Refer","https://wx.qq.com/?&lang=zh_CN")
+            .defaultHeader(HttpHeaders.ORIGIN,"https://wx.qq.com/")
+            .build();
+
+
+    FileUploadResponse fileUploadOptions(WeChat weChat){
+        final String url = String.format(WECHAT_URL_UPLOAD_MEDIA,weChat.getHostUrl());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccessControlRequestMethod(HttpMethod.POST);
+        FileUploadResponse fileUploadResponse = new FileUploadResponse();
+        Mono<FileUploadResponse> resp = webClient.options()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(FileUploadResponse.class);
+        return resp.block();
+    }
+
+    FileUploadResponse fileUploadPost(WeChat weChat, String filePath){
+        final String url = String.format(WECHAT_URL_UPLOAD_MEDIA,weChat.getHostUrl());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        FileUploadResponse fileUploadResponse = new FileUploadResponse();
+        HttpEntity<ClassPathResource> entity = new HttpEntity<>(new ClassPathResource(filePath));
+        Mono<FileUploadResponse> resp = webClient.post()
+                .uri(url)
+                .retrieve()
+                .bodyToMono(FileUploadResponse.class);
+        return resp.block();
+    }
+
+
+
+
 }

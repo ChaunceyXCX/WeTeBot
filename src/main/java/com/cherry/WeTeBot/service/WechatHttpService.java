@@ -10,6 +10,7 @@ import com.cherry.WeTeBot.enums.LoginCode;
 import com.cherry.WeTeBot.enums.StatusNotifyCode;
 import com.cherry.WeTeBot.exception.WechatException;
 import com.cherry.WeTeBot.exception.WechatQRExpiredException;
+import com.cherry.WeTeBot.utils.CookieUtils;
 import com.cherry.WeTeBot.utils.FileUtils;
 import com.cherry.WeTeBot.utils.QRCodeUtils;
 import com.cherry.WeTeBot.utils.WechatUtils;
@@ -159,6 +160,8 @@ public class WechatHttpService {
             baseRequest.setSid(weChat.getSid());
             baseRequest.setSkey(weChat.getsKey());
             weChat.setBaseRequest(baseRequest);
+            weChat.setCookies(CookieUtils.getCookiesFromList(token.getCookies()));
+            weChat.setMaxAge(CookieUtils.getMaxAge(token.getStrictTransportSecurity()));
         } else {
             throw new WechatException("token ret = " + token.getRet());
         }
