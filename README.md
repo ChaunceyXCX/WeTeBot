@@ -1,4 +1,4 @@
-# jeeves
+# WeTeBot
 
 [![Build Status](https://travis-ci.org/kanjielu/jeeves.svg?branch=master)](https://travis-ci.org/kanjielu/jeeves)
 
