@@ -27,6 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -100,7 +101,7 @@ class WechatHttpServiceInternal {
     private String WECHAT_URL_DELETE_CHATROOM_MEMBER;
     @Value("${wechat.url.add_chatroom_member}")
     private String WECHAT_URL_ADD_CHATROOM_MEMBER;
-    @Value("wechat.url.upload_media")
+    @Value("${wechat.url.upload_media}")
     private String WECHAT_URL_UPLOAD_MEDIA;
 
     private final RestTemplate restTemplate;
@@ -676,47 +677,46 @@ class WechatHttpServiceInternal {
     }
 
 
-    /**
-      * @Author https://github.com/ChaunceyCX
-      * @Description //新加入的接口都使用webclient
-      * @Date 下午7:16 19-4-24
-      * @Param [weChat]
-      * @return com.cherry.WeTeBot.component.FileUpload
-      **/
-
-    WebClient webClient = WebClient.builder()
-            .defaultHeader(HttpHeaders.USER_AGENT, "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36")
-            .defaultHeader("Refer","https://wx.qq.com/?&lang=zh_CN")
-            .defaultHeader(HttpHeaders.ORIGIN,"https://wx.qq.com/")
-            .build();
-
-
-    FileUploadResponse fileUploadOptions(WeChat weChat){
-        final String url = String.format(WECHAT_URL_UPLOAD_MEDIA,weChat.getHostUrl());
+    /*FileUploadResponse fileUploadResponse(){
+        final String url = WECHAT_URL_UPLOAD_MEDIA;
         HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.USER_AGENT,"\"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36\"");
+        headers.set("Refer","https://wx.qq.com/?&lang=zh_CN");
+        headers.setOrigin("https://wx.qq.com/");
+        return restTemplate.
+
+    }*/
+
+
+    /*FileUploadResponse fileUploadOptions(WeChat weChat){
+        final String url =
+        HttpHeaders headers = new HttpHeaders();
+        getHeader
         headers.setAccessControlRequestMethod(HttpMethod.POST);
-        FileUploadResponse fileUploadResponse = new FileUploadResponse();
-        Mono<FileUploadResponse> resp = webClient.options()
-                .uri(url)
+        Mono<String> resp = webClient.options()
+                .uri(url,"json")
                 .retrieve()
-                .bodyToMono(FileUploadResponse.class);
-        return resp.block();
-    }
+                .bodyToMono(String.class);
+        logger.info("resoult:{}",resp.block());
+        return new FileUploadResponse();
+    }*/
+
+    
 
     FileUploadResponse fileUploadPost(WeChat weChat, String filePath){
         final String url = String.format(WECHAT_URL_UPLOAD_MEDIA,weChat.getHostUrl());
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        FileUploadResponse fileUploadResponse = new FileUploadResponse();
         HttpEntity<ClassPathResource> entity = new HttpEntity<>(new ClassPathResource(filePath));
-        Mono<FileUploadResponse> resp = webClient.post()
+        FileUploadRequest fileUploadRequest = new FileUploadRequest(weChat,filePath,entity);
+
+        Mono<FileUploadResponse> resp = WebClient.create().post()
                 .uri(url)
+                .body(Mono.just(fileUploadRequest),FileUploadRequest.class)
                 .retrieve()
                 .bodyToMono(FileUploadResponse.class);
         return resp.block();
     }
-
-
 
 
 }

@@ -127,4 +127,21 @@ public class FileUtils {
             return null;
     }
 
+    /**
+      * @Author https://github.com/ChaunceyCX
+      * @Description //获取文件大小
+      * @Date 下午9:03 19-4-27
+      * @Param [filePath]
+      * @return java.lang.Long
+      **/
+
+    public static Long getFileLength(String filePath) {
+        if(!(filePath ==null || filePath.isEmpty())) {
+            File file = new File(filePath);
+            file.length();
+            return file.length();
+        }else
+            return (long)0;
+    }
+
 }

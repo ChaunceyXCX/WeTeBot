@@ -1,9 +1,6 @@
 package com.cherry.WeTeBot.service;
 
-import com.cherry.WeTeBot.component.ChatRoomMember;
-import com.cherry.WeTeBot.component.Contact;
-import com.cherry.WeTeBot.component.Message;
-import com.cherry.WeTeBot.component.RecommendInfo;
+import com.cherry.WeTeBot.component.*;
 
 import java.io.IOException;
 import java.util.Set;
@@ -39,7 +36,7 @@ public interface MessageHandler {
      * @param thumbImageUrl 图片缩略图链接
      * @param fullImageUrl  图片完整图链接
      */
-    void onReceivingPrivateImageMessage(Message message, String thumbImageUrl, String fullImageUrl ,String myID);
+    void onReceivingPrivateImageMessage(WeChat weChat, Message message, String thumbImageUrl, String fullImageUrl , String myID);
 
     /**
      * 事件：收到加好友邀请

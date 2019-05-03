@@ -164,11 +164,11 @@ public class SyncServie {
                 //个人
                 if (isMessageFromIndividual(message)) {
                     weChat.getContactNamesWithUnreadMessage().add(message.getFromUserName());
-                    messageHandler.onReceivingPrivateImageMessage(message, thumbImageUrl, fullImageUrl, myID);
+                    messageHandler.onReceivingPrivateImageMessage(weChat, message, thumbImageUrl, fullImageUrl, myID);
                 }
                 //个人sync
                 else if(isMessageFromIndividualSync(message)){
-                    messageHandler.onReceivingPrivateImageMessage(message, thumbImageUrl, fullImageUrl, myID);
+                    messageHandler.onReceivingPrivateImageMessage(weChat, message, thumbImageUrl, fullImageUrl, myID);
                 }
                 //群
                 else if (isMessageFromChatRoom(message)) {

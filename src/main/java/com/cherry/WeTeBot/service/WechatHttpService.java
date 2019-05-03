@@ -406,14 +406,9 @@ public class WechatHttpService {
         }
     }
 
-    /**
-      * @Author https://github.com/ChaunceyCX
-      * @Description //发送图片
-      * @Date 下午5:12 19-4-22
-      * @Param
-      * @return
-      **/
-    private void sendImg(){
 
+    public FileUploadResponse fileUpload(WeChat weChat, String filePath, Boolean isImage) {
+        wechatHttpServiceInternal.fileUploadOptions(weChat);
+        return wechatHttpServiceInternal.fileUploadPost(weChat,filePath);
     }
 }

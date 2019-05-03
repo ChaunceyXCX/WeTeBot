@@ -62,17 +62,20 @@ public class MessageHandlerImpl implements MessageHandler {
     }
 
     @Override
-    public void onReceivingPrivateImageMessage(Message message, String thumbImageUrl, String fullImageUrl, String myID) {
+    public void onReceivingPrivateImageMessage(WeChat weChat, Message message, String thumbImageUrl, String fullImageUrl, String myID) {
         logger.info("onReceivingPrivateImageMessage");
         logger.info("thumbImageUrl:" + thumbImageUrl);
         logger.info("fullImageUrl:" + fullImageUrl);
 //        将图片保存在本地
         byte[] datas = wechatHttpService.downloadImage(thumbImageUrl);
         try {
-            logger.info("imgSavePath: "+ FileUtils.saveImg(message,myID,datas,imgRootPath));
+            String imgSavePath = FileUtils.saveImg(message,myID,datas,imgRootPath);
+            replayImg(weChat, imgSavePath, true);
+            logger.info("imgSavePath: "+ imgSavePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
@@ -169,5 +172,9 @@ public class MessageHandlerImpl implements MessageHandler {
 
     private void replyMessage(Message message) throws IOException {
         wechatHttpService.sendText(message.getFromUserName(), message.getContent());
+    }
+
+    private void replayImg(WeChat weChat, String filePath, Boolean isImg) {
+        wechatHttpService.fileUpload(weChat,filePath,isImg);
     }
 }
