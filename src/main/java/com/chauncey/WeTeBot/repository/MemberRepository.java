@@ -11,4 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @date 2019/6/28 上午11:08
  **/
 public interface MemberRepository extends JpaRepository<Member, Long> {
+    Member findByNickName(String NickName);
 }

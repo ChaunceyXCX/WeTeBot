@@ -19,6 +19,7 @@ import com.chauncey.WeTeBot.utils.Config;
 import com.chauncey.WeTeBot.utils.MyHttpClient;
 import com.chauncey.WeTeBot.utils.SleepUtils;
 import com.chauncey.WeTeBot.utils.tools.CommonTools;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.Consts;
@@ -141,15 +142,18 @@ public class LoginServiceImpl implements ILoginService {
 
 
     public boolean getQR(String qrPath) {
-        File file = new File(qrPath);
-        if (!file.exists()) {
-            file.mkdir();
-            return true;
-        }
         qrPath = qrPath + File.separator + "QR.jpg";
         String qrUrl = URLEnum.QRCODE_URL.getUrl() + core.getUuid();
         HttpEntity entity = myHttpClient.doGet(qrUrl, null, true, null);
         try {
+            File file = new File(qrPath);
+            if (!file.getParentFile().exists()) {
+                log.info("目标路径不存在,创建之");
+                if (!file.getParentFile().mkdirs()) {
+                    log.info("创建目标文件所在目录失败！");
+                    return false;
+                }
+            }
             OutputStream out = new FileOutputStream(qrPath);
             byte[] bytes = EntityUtils.toByteArray(entity);
             out.write(bytes);
@@ -198,10 +202,10 @@ public class LoginServiceImpl implements ILoginService {
             core.getLoginInfo().put(StorageLoginInfoEnum.SyncKey.getKey(), contactInit.getSyncKey());
 
             StringBuilder sb = new StringBuilder();
-            List<Map<String, Long>> syncArray = contactInit.getSyncKey().getList();
+            List<SyncKeyItem> syncArray = contactInit.getSyncKey().getList();
             for (int i = 0; i < syncArray.size(); i++) {
-                sb.append(syncArray.get(i).get("Key") + "_"
-                        + syncArray.get(i).get("Val") + "|");
+                sb.append(syncArray.get(i).getKey() + "_"
+                        + syncArray.get(i).getVal() + "|");
             }
             // 1_661706053|2_661706420|3_661706415|1000_1494151022|
             String synckey = sb.toString();
@@ -346,6 +350,7 @@ public class LoginServiceImpl implements ILoginService {
         Map<String, Object> paramMap = core.getParamMap();
         HttpEntity entity = httpClient.doPost(url, JSON.toJSONString(paramMap));
 
+
         try {
             String result = EntityUtils.toString(entity, Consts.UTF_8);
             batchMember = objectMapper.readValue(result, BatchMember.class);
@@ -371,15 +376,15 @@ public class LoginServiceImpl implements ILoginService {
             }
 
             core.setMemberCount(batchMember.getMemberList().size());
-
+            List<Member> members = new ArrayList<>();
             for (Member member : batchMember.getMemberList()) {
                 if (member.getUserName().indexOf("@@") != -1) { // 群聊
                     if (!core.getGroupIdList().contains(member.getUserName())) {
                         //群id取出来等会用
                         core.getGroupIdList().add(member.getUserName());
-                        batchMember.getMemberList().remove(member);
                     }
                 } else {
+                    members.add(member);
                     if ((member.getVerifyFlag() & 8) != 0) { // 公众号/服务号
                         member.setFlag(2);
                     } else if (Config.API_SPECIAL_USER.contains(member.getUserName())) { // 特殊账号
@@ -391,7 +396,7 @@ public class LoginServiceImpl implements ILoginService {
                     }
                 }
             }
-            memberRepository.saveAll(batchMember.getMemberList());
+            memberRepository.saveAll(members);
             log.info(memberRepository.findAll());
             return;
         } catch (Exception e) {
@@ -597,7 +602,12 @@ public class LoginServiceImpl implements ILoginService {
         paramMap.put(StorageLoginInfoEnum.SyncKey.getKey(),
                 core.getLoginInfo().get(StorageLoginInfoEnum.SyncKey.getKey()));
         paramMap.put("rr", -new Date().getTime() / 1000);
-        String paramStr = JSON.toJSONString(paramMap);
+        String paramStr = null;
+        try {
+            paramStr = objectMapper.writeValueAsString(paramMap);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         try {
             HttpEntity entity = myHttpClient.doPost(url, paramStr);
             String text = EntityUtils.toString(entity, Consts.UTF_8);

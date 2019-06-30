@@ -36,6 +36,7 @@ public class CommonTools {
 
         switch (Config.getOsNameEnum()) {
             case WINDOWS:
+                logger.info("win");
                 if (Config.getOsNameEnum().equals(OsNameEnum.WINDOWS)) {
                     Runtime runtime = Runtime.getRuntime();
                     try {
@@ -46,6 +47,7 @@ public class CommonTools {
                 }
                 break;
             case MAC:
+                logger.info("mac");
                 if (Config.getOsNameEnum().equals(OsNameEnum.MAC)) {
                     Runtime runtime = Runtime.getRuntime();
                     try {
@@ -57,9 +59,10 @@ public class CommonTools {
                 break;
 
             default:
+                logger.info("linux");
                 try {
                     logger.info("\n" +
-                            QRUtils.generateQR(QRUtils.decode(bytes), 1, 1));
+                            QRUtils.generateQR(QRUtils.decode(bytes), 40, 40));
                 } catch (WriterException e) {
                     e.printStackTrace();
                 } catch (IOException e) {

@@ -8,8 +8,7 @@ import com.chauncey.WeTeBot.model.Core;
 import com.chauncey.WeTeBot.model.RecommendInfo;
 import com.chauncey.WeTeBot.service.IMsgHandlerService;
 import com.chauncey.WeTeBot.utils.tools.DownloadTools;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -24,23 +23,18 @@ import java.util.Date;
  * @date 创建时间：2017年4月25日 上午12:18:09
  */
 @Service
+@Log4j2
 public class MsgHandlerServiceImpl implements IMsgHandlerService {
-    private static final Logger logger = LoggerFactory.getLogger(MsgHandlerServiceImpl.class);
-
 
     public String textMsgHandle(BaseMsg msg) {
-        // String docFilePath = "D:/itchat4j/pic/1.jpg"; // 这里是需要发送的文件的路径
         if (!msg.isGroupMsg()) { // 群消息不处理
-            // String userId = msg.getString("FromUserName");
+            String userId = msg.getFromUserName();
             // MessageTools.sendFileMsgByUserId(userId, docFilePath); // 发送文件
             // MessageTools.sendPicMsgByUserId(userId, docFilePath);
             String text = msg.getText(); // 发送文本消息，也可调用MessageTools.sendFileMsgByUserId(userId,text);
-            logger.info(text);
+            log.info(text);
             if (text.equals("111")) {
                 WechatTools.logout();
-            }
-            if (text.equals("222")) {
-                WechatTools.remarkNameByNickName("yaphone", "Hello");
             }
             if (text.equals("333")) { // 测试群列表
                 System.out.print(WechatTools.getGroupNickNameList());
@@ -85,7 +79,7 @@ public class MsgHandlerServiceImpl implements IMsgHandlerService {
 
     public void sysMsgHandle(BaseMsg msg) { // 收到系统消息
         String text = msg.getContent();
-        logger.info(text);
+        log.info(text);
     }
 
 

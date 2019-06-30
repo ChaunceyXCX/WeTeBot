@@ -2,6 +2,7 @@ package com.chauncey.WeTeBot.service.impl;
 
 import com.chauncey.WeTeBot.api.WeatherTools;
 import com.chauncey.WeTeBot.model.weather.Forecast;
+import com.chauncey.WeTeBot.model.weather.HeWeather6;
 import com.chauncey.WeTeBot.model.weather.LifeStyle;
 import com.chauncey.WeTeBot.model.weather.Now;
 import com.chauncey.WeTeBot.service.IWeatherService;
@@ -26,25 +27,27 @@ public class WeatherServiceImpl implements IWeatherService {
     private WeatherTools weatherTools;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private HeWeather6 heWeather6;
 
     @Override
     public Now getWeatherNow(String parameters) throws IOException {
-        String nowStr = weatherTools.weatherNowAPI(parameters);
-        log.info(nowStr);
-        return objectMapper.readValue(nowStr, Now.class);
+        heWeather6 = weatherTools.weatherNowAPI(parameters);
+        log.info(heWeather6.toString());
+        return objectMapper.readValue(heWeather6.toString(), Now.class);
     }
 
     @Override
     public Forecast getWeatherForecast(String parameters) throws IOException {
-        String forecactStr = weatherTools.weatherForecastAPI(parameters);
-        log.info(forecactStr);
-        return objectMapper.readValue(forecactStr, Forecast.class);
+        heWeather6 = weatherTools.weatherForecastAPI(parameters);
+        log.info(heWeather6.toString());
+        return objectMapper.readValue(heWeather6.toString(), Forecast.class);
     }
 
     @Override
     public LifeStyle getWeatherLifeStyle(String parameters) throws IOException {
-        String lifeStyleStr = weatherTools.weatherLifestyleAPI(parameters);
-        log.info(lifeStyleStr);
-        return objectMapper.readValue(lifeStyleStr, LifeStyle.class);
+        heWeather6 = weatherTools.weatherLifestyleAPI(parameters);
+        log.info(heWeather6.toString());
+        return objectMapper.readValue(heWeather6.toString(), LifeStyle.class);
     }
 }
