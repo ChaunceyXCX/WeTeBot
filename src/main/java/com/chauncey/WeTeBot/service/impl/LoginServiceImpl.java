@@ -11,10 +11,10 @@ import com.chauncey.WeTeBot.enums.parameters.BaseParaEnum;
 import com.chauncey.WeTeBot.enums.parameters.LoginParaEnum;
 import com.chauncey.WeTeBot.enums.parameters.StatusNotifyParaEnum;
 import com.chauncey.WeTeBot.enums.parameters.UUIDParaEnum;
-import com.chauncey.WeTeBot.model.*;
+import com.chauncey.WeTeBot.model.wechat.*;
 import com.chauncey.WeTeBot.repository.MemberRepository;
 import com.chauncey.WeTeBot.service.ILoginService;
-import com.chauncey.WeTeBot.service.MsgCenter;
+import com.chauncey.WeTeBot.service.IMessageProcessService;
 import com.chauncey.WeTeBot.utils.Config;
 import com.chauncey.WeTeBot.utils.MyHttpClient;
 import com.chauncey.WeTeBot.utils.SleepUtils;
@@ -56,14 +56,12 @@ public class LoginServiceImpl implements ILoginService {
     private BatchMember batchMember;
     @Autowired
     private MemberRepository memberRepository;
-    /*@Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private GroupUserReposity groupUserReposity;*/
     @Autowired
     private ContactInit contactInit;
-
-    private Core core = Core.getInstance();
+    @Autowired
+    private IMessageProcessService messageProcessService;
+    @Autowired
+    private Core core;
     private MyHttpClient httpClient = core.getMyHttpClient();
 
     private MyHttpClient myHttpClient = core.getMyHttpClient();
@@ -286,7 +284,7 @@ public class LoginServiceImpl implements ILoginService {
                                     try {
                                         JSONArray msgList = new JSONArray();
                                         msgList = msgObj.getJSONArray("AddMsgList");
-                                        msgList = MsgCenter.produceMsg(msgList);
+                                        msgList = messageProcessService.produceMsg(msgList);
                                         for (int j = 0; j < msgList.size(); j++) {
                                             BaseMsg baseMsg = JSON.toJavaObject(msgList.getJSONObject(j),
                                                     BaseMsg.class);
@@ -308,7 +306,7 @@ public class LoginServiceImpl implements ILoginService {
                                         JSONArray msgList = new JSONArray();
                                         msgList = msgObj.getJSONArray("AddMsgList");
                                         JSONArray modContactList = msgObj.getJSONArray("ModContactList"); // 存在删除或者新增的好友信息
-                                        msgList = MsgCenter.produceMsg(msgList);
+                                        msgList = messageProcessService.produceMsg(msgList);
                                         for (int j = 0; j < msgList.size(); j++) {
                                             JSONObject userInfo = modContactList.getJSONObject(j);
                                             // 存在主动加好友之后的同步联系人到本地
@@ -376,27 +374,27 @@ public class LoginServiceImpl implements ILoginService {
             }
 
             core.setMemberCount(batchMember.getMemberList().size());
-            List<Member> members = new ArrayList<>();
-            for (Member member : batchMember.getMemberList()) {
-                if (member.getUserName().indexOf("@@") != -1) { // 群聊
-                    if (!core.getGroupIdList().contains(member.getUserName())) {
+            List<WechatMember> wechatMembers = new ArrayList<>();
+            for (WechatMember wechatMember : batchMember.getMemberList()) {
+                if (wechatMember.getUserName().indexOf("@@") != -1) { // 群聊
+                    if (!core.getGroupIdList().contains(wechatMember.getUserName())) {
                         //群id取出来等会用
-                        core.getGroupIdList().add(member.getUserName());
+                        core.getGroupIdList().add(wechatMember.getUserName());
                     }
                 } else {
-                    members.add(member);
-                    if ((member.getVerifyFlag() & 8) != 0) { // 公众号/服务号
-                        member.setFlag(2);
-                    } else if (Config.API_SPECIAL_USER.contains(member.getUserName())) { // 特殊账号
-                        member.setFlag(3);
-                    } else if (member.getUserName().equals(core.getUserSelf().getUserName())) { // 自己
-                        member.setFlag(0);
+                    wechatMembers.add(wechatMember);
+                    if ((wechatMember.getVerifyFlag() & 8) != 0) { // 公众号/服务号
+                        wechatMember.setFlag(2);
+                    } else if (Config.API_SPECIAL_USER.contains(wechatMember.getUserName())) { // 特殊账号
+                        wechatMember.setFlag(3);
+                    } else if (wechatMember.getUserName().equals(core.getUserSelf().getUserName())) { // 自己
+                        wechatMember.setFlag(0);
                     } else { // 普通联系人
-                        member.setFlag(1);
+                        wechatMember.setFlag(1);
                     }
                 }
             }
-            memberRepository.saveAll(members);
+            memberRepository.saveAll(wechatMembers);
             log.info(memberRepository.findAll());
             return;
         } catch (Exception e) {

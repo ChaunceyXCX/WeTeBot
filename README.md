@@ -128,9 +128,9 @@ void onChatRoomMembersChanged(Contact chatRoom, Set<ChatRoomMember> membersJoine
 
 | Parameters | Meaning |
 | --- | --- |
-| `chatRoom` | the chatroom where members changed happened |
-| `membersJoined` | a list of members that joined the chatroom |
-| `membersLeft` | a list of members that left the chatroom |
+| `chatRoom` | the chatroom where wechatMembers changed happened |
+| `membersJoined` | a list of wechatMembers that joined the chatroom |
+| `membersLeft` | a list of wechatMembers that left the chatroom |
 
 #### New friends found
 ```java
@@ -188,7 +188,7 @@ Set<Contact> getContact()
 | --- |
 | all the contacts, including friends, chatrooms and media platforms  ( type: `Set<Contact>` )|
 
-#### Get all the members in given chatrooms
+#### Get all the wechatMembers in given chatrooms
 ```java
 Set<Contact> batchGetContact(Set<String> list)
 ```
@@ -198,7 +198,7 @@ Set<Contact> batchGetContact(Set<String> list)
 
 | Returns |
 | --- |
-| chatrooms populated with all the members ( type: `Set<Contact>` )|
+| chatrooms populated with all the wechatMembers ( type: `Set<Contact>` )|
 
 #### Send plain text
 ```java
@@ -248,7 +248,7 @@ void deleteChatRoomMember(String chatRoomUserName, String userName)
 | Parameters | Meaning |
 | --- | --- |
 | `chatRoomUserName` | chatroom username |
-| `userName` | member username |
+| `userName` | wechatMember username |
 
 #### Download images in the conversation
 

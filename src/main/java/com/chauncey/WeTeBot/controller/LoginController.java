@@ -1,7 +1,8 @@
 package com.chauncey.WeTeBot.controller;
 
-import com.chauncey.WeTeBot.api.WechatTools;
-import com.chauncey.WeTeBot.model.Core;
+import com.chauncey.WeTeBot.model.job.WeJob;
+import com.chauncey.WeTeBot.model.wechat.Core;
+import com.chauncey.WeTeBot.service.IJobService;
 import com.chauncey.WeTeBot.service.ILoginService;
 import com.chauncey.WeTeBot.thread.CheckLoginStatusThread;
 import com.chauncey.WeTeBot.utils.SleepUtils;
@@ -23,9 +24,15 @@ import org.springframework.stereotype.Component;
 public class LoginController {
     @Autowired
     private ILoginService loginService;
-    private static Core core = Core.getInstance();
+    @Autowired
+    private static Core core;
     @Value("${img.qr-path}")
     private String qrPath;
+    @Value("${job.root-package}")
+    private String rootPackage;
+
+    @Autowired
+    private IJobService jobService;
 
     public void login() {
         if (core.isAlive()) { // 已登陆
@@ -83,7 +90,11 @@ public class LoginController {
         loginService.WebWxBatchGetContact();
 
         log.info("11. 缓存本次登陆好友相关消息");
-        WechatTools.setUserInfo(); // 登陆成功后缓存本次登陆好友相关消息（NickName, UserName）
+        //WeChatComponentService.setUserInfo(); // 登陆成功后缓存本次登陆好友相关消息（NickName, UserName）
+
+        log.info("job start");
+        WeJob weJob = new WeJob("test", "test_g", "测试", rootPackage + "TestTask", "0/5 * * * * ?", "test");
+        log.info("result: { }", jobService.saveJob(weJob));
 
         log.info("12.开启微信状态检测线程");
         new Thread(new CheckLoginStatusThread()).start();

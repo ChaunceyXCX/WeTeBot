@@ -1,9 +1,9 @@
 package com.chauncey.WeTeBot.thread;
 
-import com.chauncey.WeTeBot.model.Core;
+import com.chauncey.WeTeBot.model.wechat.Core;
 import com.chauncey.WeTeBot.utils.SleepUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @Author https://github.com/ChaunceyCX
@@ -17,9 +17,10 @@ import org.slf4j.LoggerFactory;
  * @Param
  * @return
  **/
+@Log4j2
 public class CheckLoginStatusThread implements Runnable {
-    private static Logger LOG = LoggerFactory.getLogger(CheckLoginStatusThread.class);
-    private Core core = Core.getInstance();
+    @Autowired
+    private Core core;
 
     @Override
     public void run() {
@@ -27,7 +28,7 @@ public class CheckLoginStatusThread implements Runnable {
             long t1 = System.currentTimeMillis(); // 秒为单位
             if (t1 - core.getLastNormalRetcodeTime() > 60 * 1000) { // 超过60秒，判为离线
                 core.setAlive(false);
-                LOG.info("微信已离线");
+                log.info("微信已离线");
             }
             SleepUtils.sleep(10 * 1000); // 休眠10秒
         }

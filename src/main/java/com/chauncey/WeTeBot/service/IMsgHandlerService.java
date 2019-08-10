@@ -1,6 +1,6 @@
 package com.chauncey.WeTeBot.service;
 
-import com.chauncey.WeTeBot.model.BaseMsg;
+import com.chauncey.WeTeBot.model.wechat.BaseMsg;
 
 /**
  * @author https://github.com/ChaunceyCX
@@ -16,7 +16,7 @@ public interface IMsgHandlerService {
      * @description 文本消息
      * @date 下午2:46 2019/6/29
      **/
-    public String textMsgHandle(BaseMsg msg);
+    String textMsgHandle(BaseMsg msg);
 
     /**
      * @param msg
@@ -25,7 +25,7 @@ public interface IMsgHandlerService {
      * @description 处理图片消息
      * @date 下午2:46 2019/6/29
      **/
-    public String picMsgHandle(BaseMsg msg);
+    String picMsgHandle(BaseMsg msg);
 
     /**
      * @param msg
@@ -34,7 +34,7 @@ public interface IMsgHandlerService {
      * @description 处理声音消息
      * @date 下午2:47 2019/6/29
      **/
-    public String voiceMsgHandle(BaseMsg msg);
+    String voiceMsgHandle(BaseMsg msg);
 
     /**
      * @param msg
@@ -43,7 +43,7 @@ public interface IMsgHandlerService {
      * @description 处理小视频消息
      * @date 下午2:47 2019/6/29
      **/
-    public String viedoMsgHandle(BaseMsg msg);
+    String viedoMsgHandle(BaseMsg msg);
 
     /**
      * @param msg
@@ -52,7 +52,7 @@ public interface IMsgHandlerService {
      * @description 处理名片消息
      * @date 下午2:47 2019/6/29
      **/
-    public String nameCardMsgHandle(BaseMsg msg);
+    String nameCardMsgHandle(BaseMsg msg);
 
     /**
      * @param msg
@@ -61,7 +61,7 @@ public interface IMsgHandlerService {
      * @description 处理系统消息
      * @date 下午2:47 2019/6/29
      **/
-    public void sysMsgHandle(BaseMsg msg);
+    void sysMsgHandle(BaseMsg msg);
 
     /**
      * @param msg
@@ -70,7 +70,7 @@ public interface IMsgHandlerService {
      * @description 处理确认添加好友消息
      * @date 下午2:48 2019/6/29
      **/
-    public String verifyAddFriendMsgHandle(BaseMsg msg);
+    String verifyAddFriendMsgHandle(BaseMsg msg);
 
     /**
      * @param msg
@@ -79,6 +79,6 @@ public interface IMsgHandlerService {
      * @description 处理收到的文件消息
      * @date 下午2:53 2019/6/29
      **/
-    public String mediaMsgHandle(BaseMsg msg);
+    String mediaMsgHandle(BaseMsg msg);
 
 }

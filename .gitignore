@@ -25,4 +25,6 @@ nbdist/
 
 README*
 
+target/*
+
 images/*
