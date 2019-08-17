@@ -35,4 +35,8 @@ public class WeJob {
         this.cronExpression = cronExpression;
         this.triggerName = triggerName;
     }
+
+    public WeJob() {
+
+    }
 }

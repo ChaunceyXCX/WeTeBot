@@ -34,28 +34,15 @@ public class WeatherTask {
     @Autowired
     private WeatherApi weatherApi;
 
-    //    @Scheduled(cron = "0 0 7 * * ?")
-    // @Scheduled(initialDelay = 30000, fixedRate = 30000)
-    private void sendStartWeatherMessage() {
-        WechatMember wechatMember = memberRepository.findByNickName("Chauncey");
+    private void sendWeatherMessage() {
+        WechatMember wechatMember = memberRepository.findByNickName(defaltToUserName);
         String weatherStr = "";
         if (wechatMember == null) {
             log.info("没有查询到联系人:" + "Chauncey");
         }
-        weatherStr = weatherApi.batchWeather("CN101280603");
+        weatherStr = weatherApi.batchWeather(doEndArea);
         // MessageTools.sendMsgById(weatherStr, member.getUserName());
         // member = memberRepository.findByNickName("Chauncey");
-        weChatComponentService.sendTextMsgByWeId(weatherStr, wechatMember.getUserName());
-    }
-
-    //    @Scheduled(cron = "20 0 7 * * ?")
-    private void sendEndWeatherMessage() {
-        WechatMember wechatMember = memberRepository.findByNickName("Chauncey");
-        String weatherStr = "";
-        if (wechatMember == null) {
-            log.info("没有查询到联系人:" + "Chauncey");
-        }
-        weatherStr = weatherApi.batchWeather("CN101280604");
         weChatComponentService.sendTextMsgByWeId(weatherStr, wechatMember.getUserName());
     }
 

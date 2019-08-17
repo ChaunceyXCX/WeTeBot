@@ -4,6 +4,7 @@ import com.chauncey.WeTeBot.model.wechat.Core;
 import com.chauncey.WeTeBot.utils.SleepUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @Author https://github.com/ChaunceyCX
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @return
  **/
 @Log4j2
+@Component
 public class CheckLoginStatusThread implements Runnable {
     @Autowired
     private Core core;

@@ -88,4 +88,5 @@ public interface IJobService {
 
 
     void schedulerJob(WeJob weJob) throws Exception;
+
 }

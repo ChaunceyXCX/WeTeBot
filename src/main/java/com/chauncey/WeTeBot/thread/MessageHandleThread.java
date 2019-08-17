@@ -12,10 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @Version 1.0
  **/
 public class MessageHandleThread implements Runnable {
-    @Autowired
+
     private IMessageProcessService messageProcessService;
-    @Autowired
     private IMsgHandlerService msgHandler;
+
+    public MessageHandleThread(IMessageProcessService messageProcessService, IMsgHandlerService msgHandler) {
+        this.messageProcessService = messageProcessService;
+        this.msgHandler = msgHandler;
+    }
 
     @Override
     public void run() {

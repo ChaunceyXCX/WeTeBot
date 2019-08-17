@@ -8,6 +8,7 @@ import com.chauncey.WeTeBot.enums.URLEnum;
 import com.chauncey.WeTeBot.model.wechat.BaseMsg;
 import com.chauncey.WeTeBot.model.wechat.Core;
 import com.chauncey.WeTeBot.service.IWeChatComponentService;
+import com.chauncey.WeTeBot.utils.MyHttpClient;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
@@ -36,6 +37,8 @@ public class WeChatComponentService implements IWeChatComponentService {
     private Core core;
     @Autowired
     private WeChatApi weChatApi;
+    @Autowired
+    private MyHttpClient myHttpClient;
 
     @Override
     public void sendTextMsgByWeId(String msg, String toUserName) {
@@ -104,7 +107,7 @@ public class WeChatComponentService implements IWeChatComponentService {
         params.add(
                 new BasicNameValuePair("skey", (String) core.getLoginInfo().get(StorageLoginInfoEnum.skey.getKey())));
         try {
-            HttpEntity entity = core.getMyHttpClient().doGet(url, params, false, null);
+            HttpEntity entity = myHttpClient.doGet(url, params, false, null);
             String text = EntityUtils.toString(entity, Consts.UTF_8); // 无消息
             return true;
         } catch (Exception e) {
@@ -130,7 +133,7 @@ public class WeChatComponentService implements IWeChatComponentService {
         msgMap.put("BaseRequest", msgMap_BaseRequest);
         try {
             String paramStr = JSON.toJSONString(msgMap);
-            HttpEntity entity = core.getMyHttpClient().doPost(url, paramStr);
+            HttpEntity entity = myHttpClient.doPost(url, paramStr);
             // String result = EntityUtils.toString(entity, Consts.UTF_8);
             log.info("修改备注" + remName);
         } catch (Exception e) {

@@ -42,7 +42,8 @@ public class WeChatApi {
 
     @Autowired
     private Core core;
-    private MyHttpClient myHttpClient = core.getMyHttpClient();
+    @Autowired
+    private MyHttpClient myHttpClient;
 
     /**
      * @return void

@@ -3,18 +3,27 @@ package com.chauncey.WeTeBot.service.impl;
 import com.chauncey.WeTeBot.api.AiChatApi;
 import com.chauncey.WeTeBot.enums.MsgTypeEnum;
 import com.chauncey.WeTeBot.model.chat.ChatParam;
+import com.chauncey.WeTeBot.model.job.WeJob;
 import com.chauncey.WeTeBot.model.wechat.BaseMsg;
+import com.chauncey.WeTeBot.model.wechat.Core;
 import com.chauncey.WeTeBot.model.wechat.RecommendInfo;
 import com.chauncey.WeTeBot.model.wechat.WechatMember;
 import com.chauncey.WeTeBot.repository.MemberRepository;
+import com.chauncey.WeTeBot.repository.WeJobRepository;
+import com.chauncey.WeTeBot.service.IJobService;
 import com.chauncey.WeTeBot.service.IMsgHandlerService;
 import com.chauncey.WeTeBot.service.IWeChatComponentService;
+import com.chauncey.WeTeBot.utils.CronFormatUtils;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -27,29 +36,121 @@ import java.util.Date;
 @Service
 @Log4j2
 public class MsgHandlerServiceImpl implements IMsgHandlerService {
-    boolean flag = false;
+    @Autowired
+    private IJobService iJobService;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private AiChatApi aiChatApi;
     @Autowired
     private IWeChatComponentService weChatComponentService;
+    @Autowired
+    private Core core;
+    @Autowired
+    private WeJobRepository weJobRepository;
+    @Value("${job.root-package}")
+    private String jobPackage;
 
     public String textMsgHandle(BaseMsg msg) {
         if (!msg.isGroupMsg()) { // 群消息不处理
-            WechatMember wechatMember = memberRepository.findByUserName(msg.getFromUserName());
-            if (wechatMember.getNickName().equals("wishes")) {
-                if (msg.getContent().equals("知道了") && flag == false) {
-                    wechatMember.setReceive(true);
-                    memberRepository.save(wechatMember);
-                    flag = true;
-                    return "礼物已经被豆奶奶签收,签收提醒已经关闭,爱你哦！！！" + "\n对了告诉你一个小秘密,解叔叔会用小bot陪你一天哦,现在给我发送消息体验吧！！！";
+            if (msg.getContent().length()>2&&msg.getContent().startsWith("提醒")) {
+                WeJob weJob = proceedJobText(msg);
+                if (null != weJob){
+                    iJobService.saveJob(weJob);
+                    return "提醒已保存";
+                }else {
+                    return "请正确输入指令!\n"
+                            +"指令格式如下:\n"
+                            +"单次提醒:\n"
+                            +"提醒我@周一6点30分30秒$起床\n"
+                            +"提醒我#明天6点30分$起床\n"
+                            +"提醒我##12点30分$干什么\n"
+                            +"提醒我#12号14点30分30秒$看电视\n"
+                            +"多次提醒:\n"
+                            +"提醒我@@周一6点30分30秒$起床\n"
+                            +"另:如果时间低于当前时间,将不会收到提醒( 每周提醒除外 )\n";
+                }
+            } else if (msg.getContent().equals("知道了")) {
+                WeJob weJob = weJobRepository.getWeJobById(Integer.valueOf(msg.getContent().split(":")[1]));
+                if (null!=weJob) {
+                    iJobService.pauseJob(weJob.getJobName(),weJob.getJobGroup());
                 }
             }
             return aiChatApi.chat(new ChatParam(msg.getContent()));
         }
         return null;
     }
+
+    private WeJob proceedJobText(BaseMsg baseMsg) {
+        WeJob weJob = new WeJob();
+        weJob.setJobName(baseMsg.getFromUserName()+"&"+new Date().getTime());
+        weJob.setJobGroup("Alarm");
+        weJob.setJobClassName(jobPackage+"WeAlarmJob");
+        StringBuilder text = new StringBuilder(baseMsg.getContent().replace("提醒",""));
+        String cronStr = "";
+        if ( text.indexOf("$")>0 ) {
+            weJob.setDescription(text.substring(text.indexOf("$") + 1));
+            if (text.length() > 3 && text.charAt(0) == '我') {
+                text.deleteCharAt(0);
+                if (text.charAt(0) == '@') {
+                    text.deleteCharAt(0);
+                    if (text.charAt(0) == '周') {
+                        text.deleteCharAt(0);
+                        cronStr = CronFormatUtils.getOneWeekCronStr(text);
+                        if (null!=cronStr){
+                            weJob.setCronExpression(cronStr);
+                            return weJob;
+                        }
+                    }
+                    if (text.length() > 1 && text.substring(0, 1).equals("@周")) {
+                        text.delete(0, 1);
+                        cronStr = CronFormatUtils.getEveryWeekCronStr(text);
+                        if (null!=cronStr){
+                            weJob.setCronExpression(cronStr);
+                            return weJob;
+                        }
+                    }
+                } else if (text.charAt(0) == '#') {
+                    text.deleteCharAt(0);
+                    if (text.length() > 3) {
+                        if (text.substring(0, 1).equals("明天")) {
+                            text.delete(0, 1);
+                            cronStr = CronFormatUtils.getNearDayCronStr(text,1);
+                            if (null!=cronStr){
+                                weJob.setCronExpression(cronStr);
+                                return weJob;
+                            }
+                        } else if (text.substring(0, 1).equals("后天")) {
+                            text.delete(0, 1);
+                            cronStr = CronFormatUtils.getNearDayCronStr(text,2);
+                            if (null!=cronStr){
+                                weJob.setCronExpression(cronStr);
+                                return weJob;
+                            }
+
+                        } else if (text.indexOf("号") > 0 && text.indexOf("号") <= 2) {
+                            cronStr = CronFormatUtils.getSimpleCronStr(text);
+                            if (null!=cronStr){
+                                weJob.setCronExpression(cronStr);
+                                return weJob;
+                            }
+
+                        } else if (text.charAt(0) == '#') {
+                            text.deleteCharAt(0);
+                            cronStr = CronFormatUtils.getToDayCronStr(text);
+                            if (null!=cronStr){
+                                weJob.setCronExpression(cronStr);
+                                return weJob;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
 
 
     public String picMsgHandle(BaseMsg msg) {

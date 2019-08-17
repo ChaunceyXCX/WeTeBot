@@ -16,6 +16,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.logging.Logger;
  * @version 1.0
  * @date 创建时间：2017年4月9日 下午7:05:04
  */
+@Component
 public class MyHttpClient {
     private Logger logger = Logger.getLogger("MyHttpClient");
 
@@ -69,7 +71,7 @@ public class MyHttpClient {
      * @author https://github.com/yaphone
      * @date 2017年5月7日 下午8:37:17
      */
-    public static MyHttpClient getInstance() {
+    /*public static MyHttpClient getInstance() {
         if (instance == null) {
             synchronized (MyHttpClient.class) {
                 if (instance == null) {
@@ -78,7 +80,7 @@ public class MyHttpClient {
             }
         }
         return instance;
-    }
+    }*/
 
     /**
      * 处理GET请求
@@ -126,7 +128,7 @@ public class MyHttpClient {
      * 处理POST请求
      *
      * @param url
-     * @param params
+     * @param
      * @return
      * @author https://github.com/yaphone
      * @date 2017年4月9日 下午7:06:35

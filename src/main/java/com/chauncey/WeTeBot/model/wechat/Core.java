@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.chauncey.WeTeBot.enums.parameters.BaseParaEnum;
 import com.chauncey.WeTeBot.utils.MyHttpClient;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -23,14 +24,6 @@ import java.util.Map;
 public class Core {
 
     private Core instance;
-
-    private Core() {
-        if (instance == null) {
-            synchronized (Core.class) {
-                instance = new Core();
-            }
-        }
-    }
 
     boolean alive = false;
     private int memberCount = 0;
@@ -62,7 +55,6 @@ public class Core {
 
     Map<String, Object> loginInfo = new HashMap<String, Object>();
     // CloseableHttpClient httpClient = HttpClients.createDefault();
-    MyHttpClient myHttpClient = MyHttpClient.getInstance();
     String uuid = null;
 
     boolean useHotReload = false;

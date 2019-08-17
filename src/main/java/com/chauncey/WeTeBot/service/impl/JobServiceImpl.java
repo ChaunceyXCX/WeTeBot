@@ -129,4 +129,6 @@ public class JobServiceImpl implements IJobService {
 
         scheduler.scheduleJob(jobDetail, trigger);
     }
+
+
 }

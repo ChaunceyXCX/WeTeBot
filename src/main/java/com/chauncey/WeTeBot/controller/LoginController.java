@@ -25,7 +25,7 @@ public class LoginController {
     @Autowired
     private ILoginService loginService;
     @Autowired
-    private static Core core;
+    private  Core core;
     @Value("${img.qr-path}")
     private String qrPath;
     @Value("${job.root-package}")
@@ -92,11 +92,7 @@ public class LoginController {
         log.info("11. 缓存本次登陆好友相关消息");
         //WeChatComponentService.setUserInfo(); // 登陆成功后缓存本次登陆好友相关消息（NickName, UserName）
 
-        log.info("job start");
-        WeJob weJob = new WeJob("test", "test_g", "测试", rootPackage + "TestTask", "0/5 * * * * ?", "test");
-        log.info("result: { }", jobService.saveJob(weJob));
-
         log.info("12.开启微信状态检测线程");
-        new Thread(new CheckLoginStatusThread()).start();
+        //new Thread(new CheckLoginStatusThread()).start();
     }
 }

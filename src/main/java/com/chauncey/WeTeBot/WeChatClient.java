@@ -3,6 +3,8 @@ package com.chauncey.WeTeBot;
 //import com.chauncey.WeTeBot.service.LoginService;
 
 import com.chauncey.WeTeBot.controller.LoginController;
+import com.chauncey.WeTeBot.service.IMessageProcessService;
+import com.chauncey.WeTeBot.service.IMsgHandlerService;
 import com.chauncey.WeTeBot.thread.MessageHandleThread;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +16,16 @@ public class WeChatClient {
 
     @Autowired
     private LoginController loginController;
+    @Autowired
+    private IMessageProcessService messageProcessService;
+    @Autowired
+    private IMsgHandlerService msgHandler;
 
     //启动器
     public void start() {
         System.setProperty("jsse.enableSNIExtension", "false"); // 防止SSL错误
         loginController.login();
         log.info("开始处理消息");
-        new Thread(new MessageHandleThread()).start();
+        new Thread(new MessageHandleThread(messageProcessService,msgHandler)).start();
     }
 }

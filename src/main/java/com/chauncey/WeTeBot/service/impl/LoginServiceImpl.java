@@ -62,9 +62,10 @@ public class LoginServiceImpl implements ILoginService {
     private IMessageProcessService messageProcessService;
     @Autowired
     private Core core;
-    private MyHttpClient httpClient = core.getMyHttpClient();
-
-    private MyHttpClient myHttpClient = core.getMyHttpClient();
+    @Autowired
+    private MyHttpClient httpClient;
+    @Autowired
+    private MyHttpClient myHttpClient;
 
     public LoginServiceImpl() {
 

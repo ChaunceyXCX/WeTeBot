@@ -44,7 +44,7 @@ img:
 
 #job path
 job:
-  root-package: "com.chauncey.WeTeBot.task."
+  root-package: "com.chauncey.WeTeBot.job."
 
 #scheduler
 
