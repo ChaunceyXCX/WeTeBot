@@ -5,9 +5,9 @@ server:
   #DB--mysql
 spring:
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/wetebot?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8&serverTimezone=GMT
-    username: root
-    password: 111111
+    url: jdbc:mysql://47.106.222.19:3306/wetebot?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8&serverTimezone=GMT
+    username: chauncey
+    password: xcx1995
     driver-class-name: com.mysql.cj.jdbc.Driver
     max-idle: 10
     max-wait: 10000
@@ -67,11 +67,3 @@ api:
       now: now
       forecast: forecast
       lifestyle: lifestyle
-    location:
-      #汝南
-      default: CN101181605
-      #深圳福田
-      start: CN101280603
-      #深圳南山
-      end: CN101280604
-

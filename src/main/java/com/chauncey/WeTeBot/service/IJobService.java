@@ -3,6 +3,8 @@ package com.chauncey.WeTeBot.service;
 import com.chauncey.WeTeBot.config.Result;
 import com.chauncey.WeTeBot.model.job.WeJob;
 
+import java.util.List;
+
 /**
  * @ClassName IJobService
  * @Description TODO
@@ -21,24 +23,24 @@ public interface IJobService {
     Result saveJob(WeJob weJob);
 
     /**
-     * @param jobGroup
+     * @param weJob
      * @return com.chauncey.WeTeBot.common.Result
      * @Author https://github.com/ChaunceyCX
      * @Description 触发job
      * @Date 下午4:43 2019/8/8
      * @Param jobName
      **/
-    Result triggerJob(String jobName, String jobGroup);
+    Result triggerJob(WeJob weJob);
 
     /**
-     * @param jobGroup
+     * @param weJob
      * @return com.chauncey.WeTeBot.common.Result
      * @Author https://github.com/ChaunceyCX
      * @Description // 暂停job
      * @Date 下午4:45 2019/8/8
      * @Param jobName
      **/
-    Result pauseJob(String jobName, String jobGroup);
+    Result pauseJob(WeJob weJob);
 
     /**
      * @param jobGroup
@@ -48,20 +50,19 @@ public interface IJobService {
      * @Date 下午4:49 2019/8/8
      * @Param * @param jobName
      **/
-    Result resumeJob(String jobName, String jobGroup);
+    Result resumeJob(WeJob weJob);
 
 
     /**
      * 移除job
      *
-     * @param jobName
-     * @param jobGroup
+     * @param weJob
      * @return com.chauncey.WeTeBot.common.Result
      * @throws
      * @Author https://github.com/ChaunceyCX
      * @Date 2019/8/8 下午5:22
      */
-    Result removeJob(String jobName, String jobGroup);
+    Result removeJob(WeJob weJob);
 
     /**
      * 获取job
@@ -88,5 +89,7 @@ public interface IJobService {
 
 
     void schedulerJob(WeJob weJob) throws Exception;
+
+    List<WeJob> getAllJob();
 
 }

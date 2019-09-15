@@ -19,24 +19,36 @@ public class WeJob {
     @Id
     @GeneratedValue
     private Integer id;
-    private String jobName;//任务名称
-    private String jobGroup;//任务分组
-    private String description;//任务描述
+    private String jobName;//任务名称(时间戳保证唯一)
+    private String jobGroup;//任务分组(创建任务者的昵称)
+    private String toNickName;//昵称
+    private String toWeId;//微信username
+    private String content;//提醒内容
     private String jobClassName;//执行类
     private String cronExpression;//执行时间
-    private String triggerName;//执行时间
     private String triggerState;//任务状态
 
-    public WeJob(String jobName, String jobGroup, String description, String jobClassName, String cronExpression, String triggerName) {
+    public WeJob(String jobName, String jobGroup, String toNickName, String toWeId, String content, String jobClassName, String cronExpression, String triggerState) {
         this.jobName = jobName;
         this.jobGroup = jobGroup;
-        this.description = description;
+        this.toNickName = toNickName;
+        this.toWeId = toWeId;
+        this.content = content;
         this.jobClassName = jobClassName;
         this.cronExpression = cronExpression;
-        this.triggerName = triggerName;
+        this.triggerState = triggerState;
+    }
+
+    public WeJob(String jobName, String jobGroup, String toNickName, String toWeId, String jobClassName, String triggerState, String content) {
+        this.setJobName(jobName);
+        this.setJobGroup(jobGroup);
+        this.setToNickName(toNickName);
+        this.setToWeId(toWeId);
+        this.setJobClassName(jobClassName);
+        this.setTriggerState(triggerState);
+        this.setContent(content);
     }
 
     public WeJob() {
-
     }
 }

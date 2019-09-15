@@ -7,7 +7,7 @@ package com.chauncey.WeTeBot.enums.job;
  * @Date 2019/8/8 下午6:51
  * @Version 1.0
  **/
-public enum JobStatus {
+public enum JobStatusEnum {
     RUNNING("RUNNING"),
     COMPLETE("COMPLETE"),
     PAUSED("PAUSED");
@@ -15,7 +15,7 @@ public enum JobStatus {
     private String status;
 
 
-    JobStatus(String status) {
+    JobStatusEnum(String status) {
         this.status = status;
     }
 

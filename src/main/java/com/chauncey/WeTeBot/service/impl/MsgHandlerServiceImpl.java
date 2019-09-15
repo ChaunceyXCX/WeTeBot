@@ -2,6 +2,8 @@ package com.chauncey.WeTeBot.service.impl;
 
 import com.chauncey.WeTeBot.api.AiChatApi;
 import com.chauncey.WeTeBot.enums.MsgTypeEnum;
+import com.chauncey.WeTeBot.enums.job.JobClassEnum;
+import com.chauncey.WeTeBot.enums.job.JobStatusEnum;
 import com.chauncey.WeTeBot.model.chat.ChatParam;
 import com.chauncey.WeTeBot.model.job.WeJob;
 import com.chauncey.WeTeBot.model.wechat.BaseMsg;
@@ -11,19 +13,17 @@ import com.chauncey.WeTeBot.model.wechat.WechatMember;
 import com.chauncey.WeTeBot.repository.MemberRepository;
 import com.chauncey.WeTeBot.repository.WeJobRepository;
 import com.chauncey.WeTeBot.service.IJobService;
+import com.chauncey.WeTeBot.service.ILoginService;
 import com.chauncey.WeTeBot.service.IMsgHandlerService;
 import com.chauncey.WeTeBot.service.IWeChatComponentService;
-import com.chauncey.WeTeBot.utils.CronFormatUtils;
-import lombok.Data;
+import com.chauncey.WeTeBot.utils.job.JobTextProceedUtils;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -37,7 +37,9 @@ import java.util.Date;
 @Log4j2
 public class MsgHandlerServiceImpl implements IMsgHandlerService {
     @Autowired
-    private IJobService iJobService;
+    private IJobService jobService;
+    @Autowired
+    private ILoginService loginService;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -53,10 +55,22 @@ public class MsgHandlerServiceImpl implements IMsgHandlerService {
 
     public String textMsgHandle(BaseMsg msg) {
         if (!msg.isGroupMsg()) { // 群消息不处理
-            if (msg.getContent().length()>2&&msg.getContent().startsWith("提醒")) {
-                WeJob weJob = proceedJobText(msg);
+            String weId = msg.getFromUserName();
+            WechatMember member = memberRepository.findByUserName(weId);
+            if (msg.getContent().length()>=2&&msg.getContent().startsWith("提醒")) {
+
+                WeJob weJob = new WeJob(
+                        String.valueOf(new Date().getTime()),
+                        member.getNickName(),
+                        member.getNickName(),
+                        weId,
+                        jobPackage+ JobClassEnum.Alarm.getClassStr(),
+                        JobStatusEnum.RUNNING.getStatus(),
+                        msg.getContent()
+                );
+                weJob = JobTextProceedUtils.proceedJobText(weJob);
                 if (null != weJob){
-                    iJobService.saveJob(weJob);
+                    jobService.saveJob(weJob);
                     return "提醒已保存";
                 }else {
                     return "请正确输入指令!\n"
@@ -70,88 +84,42 @@ public class MsgHandlerServiceImpl implements IMsgHandlerService {
                             +"提醒我@@周一6点30分30秒$起床\n"
                             +"另:如果时间低于当前时间,将不会收到提醒( 每周提醒除外 )\n";
                 }
-            } else if (msg.getContent().equals("知道了")) {
+            } else if (msg.getContent().length()>=2&&msg.getContent().startsWith("天气")){
+                //天气#0-24点#xxxx#
+                WeJob weJob = new WeJob(
+                        String.valueOf(new Date().getTime()),
+                        member.getNickName(),
+                        member.getNickName(),
+                        weId,
+                        jobPackage+ JobClassEnum.Weather.getClassStr(),
+                        JobStatusEnum.RUNNING.getStatus(),
+                        msg.getContent()
+                );
+                weJob = JobTextProceedUtils.proceedWeatherText(weJob);
+                if (null != weJob){
+                    jobService.saveJob(weJob);
+                    return "天气提醒已保存";
+                }else {
+                    return "请正确输入指令!\n"
+                            +"指令格式如下:\n"
+                            +"天气#0-24点$城市ID(城市id可以到以下网站搜索,或者自己google)\n"
+                            +"https://where.heweather.com/location.html";
+                }
+
+            } else if (msg.getContent().length()>5&&msg.getContent().startsWith("知道了:")) {
                 WeJob weJob = weJobRepository.getWeJobById(Integer.valueOf(msg.getContent().split(":")[1]));
+                if (weJob.getJobGroup().equals("admin")){
+                    return "你没有操作此任务的权限!!!!";
+                }
                 if (null!=weJob) {
-                    iJobService.pauseJob(weJob.getJobName(),weJob.getJobGroup());
+                    jobService.pauseJob(weJob);
+                    return "好的,通知已停止!!!";
                 }
             }
             return aiChatApi.chat(new ChatParam(msg.getContent()));
         }
         return null;
     }
-
-    private WeJob proceedJobText(BaseMsg baseMsg) {
-        WeJob weJob = new WeJob();
-        weJob.setJobName(baseMsg.getFromUserName()+"&"+new Date().getTime());
-        weJob.setJobGroup("Alarm");
-        weJob.setJobClassName(jobPackage+"WeAlarmJob");
-        StringBuilder text = new StringBuilder(baseMsg.getContent().replace("提醒",""));
-        String cronStr = "";
-        if ( text.indexOf("$")>0 ) {
-            weJob.setDescription(text.substring(text.indexOf("$") + 1));
-            if (text.length() > 3 && text.charAt(0) == '我') {
-                text.deleteCharAt(0);
-                if (text.charAt(0) == '@') {
-                    text.deleteCharAt(0);
-                    if (text.charAt(0) == '周') {
-                        text.deleteCharAt(0);
-                        cronStr = CronFormatUtils.getOneWeekCronStr(text);
-                        if (null!=cronStr){
-                            weJob.setCronExpression(cronStr);
-                            return weJob;
-                        }
-                    }
-                    if (text.length() > 1 && text.substring(0, 1).equals("@周")) {
-                        text.delete(0, 1);
-                        cronStr = CronFormatUtils.getEveryWeekCronStr(text);
-                        if (null!=cronStr){
-                            weJob.setCronExpression(cronStr);
-                            return weJob;
-                        }
-                    }
-                } else if (text.charAt(0) == '#') {
-                    text.deleteCharAt(0);
-                    if (text.length() > 3) {
-                        if (text.substring(0, 1).equals("明天")) {
-                            text.delete(0, 1);
-                            cronStr = CronFormatUtils.getNearDayCronStr(text,1);
-                            if (null!=cronStr){
-                                weJob.setCronExpression(cronStr);
-                                return weJob;
-                            }
-                        } else if (text.substring(0, 1).equals("后天")) {
-                            text.delete(0, 1);
-                            cronStr = CronFormatUtils.getNearDayCronStr(text,2);
-                            if (null!=cronStr){
-                                weJob.setCronExpression(cronStr);
-                                return weJob;
-                            }
-
-                        } else if (text.indexOf("号") > 0 && text.indexOf("号") <= 2) {
-                            cronStr = CronFormatUtils.getSimpleCronStr(text);
-                            if (null!=cronStr){
-                                weJob.setCronExpression(cronStr);
-                                return weJob;
-                            }
-
-                        } else if (text.charAt(0) == '#') {
-                            text.deleteCharAt(0);
-                            cronStr = CronFormatUtils.getToDayCronStr(text);
-                            if (null!=cronStr){
-                                weJob.setCronExpression(cronStr);
-                                return weJob;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-
 
     public String picMsgHandle(BaseMsg msg) {
         String fileName = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());// 这里使用收到图片的时间作为文件名
@@ -195,8 +163,11 @@ public class MsgHandlerServiceImpl implements IMsgHandlerService {
         RecommendInfo recommendInfo = msg.getRecommendInfo();
         String nickName = recommendInfo.getNickName();
         String province = recommendInfo.getProvince();
+        WechatMember wechatMember = new WechatMember();
+        loginService.webWxGetContact();
         String city = recommendInfo.getCity();
         String text = "你好，来自" + province + city + "的" + nickName + "， 欢迎添加我为好友！";
+        log.info(text);
         return text;
     }
 
@@ -207,5 +178,7 @@ public class MsgHandlerServiceImpl implements IMsgHandlerService {
         weChatComponentService.downloadFile(msg, MsgTypeEnum.MEDIA.getType(), filePath);
         return "文件" + fileName + "保存成功";
     }
+
+
 
 }

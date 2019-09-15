@@ -4,8 +4,10 @@ import com.chauncey.WeTeBot.model.job.WeJob;
 import com.chauncey.WeTeBot.repository.WeJobRepository;
 import com.chauncey.WeTeBot.service.IWeChatComponentService;
 import lombok.extern.log4j.Log4j2;
+import org.quartz.InterruptableJob;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.UnableToInterruptJobException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ import org.springframework.stereotype.Component;
  **/
 @Component
 @Log4j2
-public class WeAlarmJob extends QuartzJobBean {
+public class WeAlarmJob implements InterruptableJob {
 
     @Autowired
     private IWeChatComponentService weChatComponentService;
@@ -27,7 +29,12 @@ public class WeAlarmJob extends QuartzJobBean {
     private WeJobRepository weJobRepository;
 
     @Override
-    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+    public void interrupt() throws UnableToInterruptJobException {
+
+    }
+
+    @Override
+    public void execute(JobExecutionContext context) throws JobExecutionException {
         String jobName = context.getJobDetail().getKey().getName();
         WeJob weJob = weJobRepository.getWeJobByJobName(jobName);
         if (jobName.contains("&")) {
@@ -35,10 +42,10 @@ public class WeAlarmJob extends QuartzJobBean {
         }
         if (weJob.getCronExpression().contains("/")){
 
-            weChatComponentService.sendTextMsgByWeId(context.getJobDetail().getDescription()+"\n回复:知道了:"+weJob.getId(),jobName);
+            weChatComponentService.sendTextMsgByWeId(weJob.getContent()+"\n回复:知道了:"+weJob.getId(),weJob.getToWeId());
         }else {
 
-            weChatComponentService.sendTextMsgByWeId(context.getJobDetail().getDescription()+"\n回复:知道了:"+weJob.getId(),jobName);
+            weChatComponentService.sendTextMsgByWeId(weJob.getContent()+"\n",weJob.getToWeId());
         }
     }
 }

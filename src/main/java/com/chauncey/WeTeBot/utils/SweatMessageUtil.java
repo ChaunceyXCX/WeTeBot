@@ -22,14 +22,14 @@ public class SweatMessageUtil {
         Basic basic = weather.getBasic();
         Update update = weather.getUpdate();
         Forecast forecastToDay = forecast.get(0);
-        String loverMessage = "早上好: 主人的豆奶奶, " + basic.getLocation() + "区:\n"
+        String loverMessage = "早上好: " + basic.getLocation() + ":\n"
                 + "\n"
                 + " 今天的天气是: " + forecastToDay.getCond_txt_d() + " 转 " + forecastToDay.getCond_txt_n() + "\n"
                 + " 今天的温度是: " + forecastToDay.getTmp_min() + "°C~" + forecastToDay.getTmp_max() + "°C" + "\n"
                 + " 风向: " + forecastToDay.getWind_dir() + " " + forecastToDay.getWind_sc() + "级" + forecastToDay.getWind_spd() + "公里/小时" + "\n"
                 + " 相对湿度: " + forecastToDay.getHum() + '%' + "\n"
                 + " 降水量: " + forecastToDay.getPcpn() + "ml" + "   降水概率: " + forecastToDay.getPop() + '%' + "\n"
-                + (Integer.valueOf(forecastToDay.getPop()) > 0 ? "------------------------------------------\n  今天可能会下雨,别再忘了带伞了,大猪头\n------------------------------------------\n" : "")
+                + (Integer.valueOf(forecastToDay.getPop()) > 0 ? "------------------------------------------\n  今天可能会下雨,别再忘了带伞了\n------------------------------------------\n" : "")
                 + " 能见度: " + forecastToDay.getVis() + "公里" + "\n"
                 + "------------------------------------------" + "\n"
                 + " 当前气温: " + now.getTmp() + "°C" + "  体感温度: " + now.getFl() + "°C" + "\n"
@@ -38,9 +38,7 @@ public class SweatMessageUtil {
                 + " 今天的生活指数: \n"
                 + "1、" + lifeStyle.get(0).getTxt() + "\n\n"
                 + "2、" + lifeStyle.get(1).getTxt() + "\n\n"
-                + "3、" + lifeStyle.get(2).getTxt() + "\n\n"
-                + "😄😊😉😍😘😚😜😝😳😁" + "\n\n"
-                + "   主人(就是你的解叔叔): 爱你吆 \n";
+                + "3、" + lifeStyle.get(2).getTxt() + "\n\n";
         return loverMessage;
     }
 }

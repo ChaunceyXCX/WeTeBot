@@ -1,12 +1,17 @@
 package com.chauncey.WeTeBot.job;
 
 import com.chauncey.WeTeBot.api.WeatherApi;
+import com.chauncey.WeTeBot.model.job.WeJob;
 import com.chauncey.WeTeBot.model.wechat.WechatMember;
 import com.chauncey.WeTeBot.repository.MemberRepository;
+import com.chauncey.WeTeBot.repository.WeJobRepository;
 import com.chauncey.WeTeBot.service.IWeChatComponentService;
 import lombok.extern.log4j.Log4j2;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,32 +23,23 @@ import org.springframework.stereotype.Component;
  **/
 @Log4j2
 @Component
-public class WeatherTask {
-
-    @Value("${message.default.tousername}")
-    private String defaltToUserName;
-    @Value("${api.weather.location.start}")
-    private String doStartArea;
-    @Value("${api.weather.location.end}")
-    private String doEndArea;
+public class WeatherJob extends QuartzJobBean {
 
     @Autowired
     private IWeChatComponentService weChatComponentService;
     @Autowired
-    private MemberRepository memberRepository;
+    private WeJobRepository weJobRepository;
     @Autowired
     private WeatherApi weatherApi;
 
-    private void sendWeatherMessage() {
-        WechatMember wechatMember = memberRepository.findByNickName(defaltToUserName);
+    @Override
+    protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+        String jobName = context.getJobDetail().getKey().getName();
+        WeJob weJob = weJobRepository.getWeJobByJobName(jobName);
         String weatherStr = "";
-        if (wechatMember == null) {
-            log.info("没有查询到联系人:" + "Chauncey");
-        }
-        weatherStr = weatherApi.batchWeather(doEndArea);
+        weatherStr = weatherApi.batchWeather(weJob.getContent());
         // MessageTools.sendMsgById(weatherStr, member.getUserName());
         // member = memberRepository.findByNickName("Chauncey");
-        weChatComponentService.sendTextMsgByWeId(weatherStr, wechatMember.getUserName());
+        weChatComponentService.sendTextMsgByWeId(weatherStr, weJob.getToWeId());
     }
-
 }

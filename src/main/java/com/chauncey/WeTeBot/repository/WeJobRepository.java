@@ -3,6 +3,8 @@ package com.chauncey.WeTeBot.repository;
 import com.chauncey.WeTeBot.model.job.WeJob;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * @ClassName WeJobRepository
  * @Description TODO
@@ -14,6 +16,5 @@ public interface WeJobRepository extends JpaRepository<WeJob, Long> {
     WeJob getWeJobByJobName(String jobName);
 
     WeJob getWeJobById(Integer id);
-
 
 }

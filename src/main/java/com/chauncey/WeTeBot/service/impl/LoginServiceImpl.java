@@ -111,6 +111,14 @@ public class LoginServiceImpl implements ILoginService {
     }
 
 
+    /**
+     * @despretion UUID
+     * @author https://github.com/ChaunceyCX
+     * @param
+     * @return java.lang.String
+     * @throws
+     * @date 2019/9/14 下午5:17
+     */
     public String getUuid() {
         // 组装参数和URL
         List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
@@ -140,6 +148,14 @@ public class LoginServiceImpl implements ILoginService {
     }
 
 
+    /**
+     * @despretion 二维码
+     * @author https://github.com/ChaunceyCX
+     * @param qrPath
+     * @return boolean
+     * @throws
+     * @date 2019/9/14 下午5:17
+     */
     public boolean getQR(String qrPath) {
         qrPath = qrPath + File.separator + "QR.jpg";
         String qrUrl = URLEnum.QRCODE_URL.getUrl() + core.getUuid();
@@ -343,6 +359,14 @@ public class LoginServiceImpl implements ILoginService {
     }
 
 
+    /**
+     * @despretion 获取好友列表
+     * @author https://github.com/ChaunceyCX
+     * @param
+     * @return void
+     * @throws
+     * @date 2019/9/14 下午5:19
+     */
     public void webWxGetContact() {
         String url = String.format(URLEnum.WEB_WX_GET_CONTACT.getUrl(),
                 core.getLoginInfo().get(StorageLoginInfoEnum.url.getKey()));
@@ -404,7 +428,14 @@ public class LoginServiceImpl implements ILoginService {
         return;
     }
 
-
+    /**
+     * @despretion 获取群好友
+     * @author https://github.com/ChaunceyCX
+     * @param
+     * @return void
+     * @throws
+     * @date 2019/9/14 下午5:18
+     */
     public void WebWxBatchGetContact() {
         String url = String.format(URLEnum.WEB_WX_BATCH_GET_CONTACT.getUrl(),
                 core.getLoginInfo().get(StorageLoginInfoEnum.url.getKey()), new Date().getTime(),

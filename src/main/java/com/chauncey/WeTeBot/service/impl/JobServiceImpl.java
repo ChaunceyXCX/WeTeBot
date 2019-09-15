@@ -1,14 +1,20 @@
 package com.chauncey.WeTeBot.service.impl;
 
 import com.chauncey.WeTeBot.config.Result;
-import com.chauncey.WeTeBot.enums.job.JobStatus;
+import com.chauncey.WeTeBot.enums.job.JobStatusEnum;
 import com.chauncey.WeTeBot.model.job.WeJob;
 import com.chauncey.WeTeBot.repository.WeJobRepository;
 import com.chauncey.WeTeBot.service.IJobService;
 import lombok.extern.log4j.Log4j2;
 import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName JobServiceImpl
@@ -25,26 +31,35 @@ public class JobServiceImpl implements IJobService {
     private Scheduler scheduler;
     @Autowired
     private WeJobRepository weJobRepository;
+    @Value("${job.root-package}")
+    private String jobRoot;
 
 
     @Override
     public Result saveJob(WeJob weJob) {
 
         try {
+            if (weJob.getJobGroup().equals("admin")){
+                Date date = new Date();
+                weJob.setJobName(Long.toString(date.getTime()));
+            }
             schedulerJob(weJob);
-            weJob.setTriggerName(JobStatus.RUNNING.getStatus());
-            weJobRepository.save(weJob);
+            weJob.setTriggerState(JobStatusEnum.RUNNING.getStatus());
+            weJob = weJobRepository.save(weJob);
         } catch (Exception e) {
             e.printStackTrace();
             return Result.error();
         }
-        return Result.ok();
+        Map<String,Object> map = new HashMap<>();
+        map.put("weJob",weJob);
+        return Result.ok(map);
     }
 
     @Override
-    public Result triggerJob(String jobName, String jobGroup) {
-        JobKey jobKey = new JobKey(jobName, jobGroup);
+    public Result triggerJob(WeJob weJob) {
+        JobKey jobKey = new JobKey(weJob.getJobName(), weJob.getJobGroup());
         try {
+            weJobRepository.save(weJob);
             scheduler.triggerJob(jobKey);
         } catch (SchedulerException e) {
             e.printStackTrace();
@@ -53,10 +68,12 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
-    public Result pauseJob(String jobName, String jobGroup) {
-        JobKey jobKey = new JobKey(jobName, jobGroup);
+    public Result pauseJob(WeJob weJob) {
+        TriggerKey triggerKey = new TriggerKey(weJob.getJobName(),weJob.getJobGroup());
         try {
-            scheduler.pauseJob(jobKey);
+            weJob.setTriggerState(JobStatusEnum.PAUSED.getStatus());
+            weJobRepository.save(weJob);
+            scheduler.pauseTrigger(triggerKey);
         } catch (SchedulerException e) {
             e.printStackTrace();
             return Result.error();
@@ -65,10 +82,13 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
-    public Result resumeJob(String jobName, String jobGroup) {
-        JobKey jobKey = new JobKey(jobName, jobGroup);
+    public Result resumeJob(WeJob weJob) {
+        TriggerKey triggerKey = new TriggerKey(weJob.getJobName(),weJob.getJobGroup());
         try {
-            scheduler.resumeJob(jobKey);
+            //scheduler.resumeJob();
+            scheduler.resumeTrigger(triggerKey);
+            weJob.setTriggerState(JobStatusEnum.RUNNING.getStatus());
+            weJobRepository.save(weJob);
         } catch (SchedulerException e) {
             e.printStackTrace();
             return Result.error();
@@ -77,9 +97,10 @@ public class JobServiceImpl implements IJobService {
     }
 
     @Override
-    public Result removeJob(String jobName, String jobGroup) {
-        JobKey jobKey = new JobKey(jobName, jobGroup);
+    public Result removeJob(WeJob weJob) {
+        JobKey jobKey = new JobKey(weJob.getJobName(), weJob.getJobGroup());
         try {
+            weJobRepository.delete(weJob);
             scheduler.deleteJob(jobKey);
         } catch (SchedulerException e) {
             e.printStackTrace();
@@ -100,10 +121,14 @@ public class JobServiceImpl implements IJobService {
         try {
             scheduler.deleteJob(new JobKey(oldWeJob.getJobName(), oldWeJob.getJobGroup()));
             schedulerJob(weJob);
+            if (weJob.getTriggerState().equals(JobStatusEnum.PAUSED.getStatus())){
+                TriggerKey triggerKey = new TriggerKey(weJob.getJobName(), weJob.getJobGroup());
+                scheduler.pauseTrigger(triggerKey);
+            }
             weJobRepository.save(weJob);
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.error();
+            return Result.error(e.toString());
         }
         return Result.ok();
     }
@@ -117,7 +142,7 @@ public class JobServiceImpl implements IJobService {
 
         JobDetail jobDetail = JobBuilder.newJob(cls)
                 .withIdentity(weJob.getJobName(), weJob.getJobGroup())
-                .withDescription(weJob.getDescription())
+                .withDescription(weJob.getContent())
                 .build();
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(weJob.getCronExpression().trim());
         Trigger trigger = TriggerBuilder.newTrigger()
@@ -128,6 +153,12 @@ public class JobServiceImpl implements IJobService {
 
 
         scheduler.scheduleJob(jobDetail, trigger);
+    }
+
+    @Override
+    public List<WeJob> getAllJob() {
+
+        return weJobRepository.findAll();
     }
 
 
