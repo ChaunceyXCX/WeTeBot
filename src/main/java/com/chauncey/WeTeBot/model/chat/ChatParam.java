@@ -1,10 +1,13 @@
 package com.chauncey.WeTeBot.model.chat;
 
 import lombok.Data;
+import lombok.extern.apachecommons.CommonsLog;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -20,16 +23,17 @@ import java.util.*;
 public class ChatParam {
     private Map<String, Object> params;
 
-    public ChatParam(String reQuestion) {
+
+    public ChatParam(String appId, String appKey, String content) {
         this.params = new HashMap<>();
-        params.put("app_id", 2119608286);
+        params.put("app_id", appId);
         params.put("time_stamp", new Date().getTime() / 1000);
         params.put("nonce_str", getRandomString(16));
         params.put("session", "2119608286");
-        params.put("question", reQuestion);
+        params.put("question", content);
 
         try {
-            params = getSignature(params, "dk1DlGphK4WMWpp7");
+            params = getSignature(params, appKey);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,7 +81,7 @@ public class ChatParam {
             if (param.getValue() != null && !"".equals(param.getKey().trim()) &&
                     !"sign".equals(param.getKey().trim()) && !"".equals(param.getValue())) {
                 baseString.append(param.getKey().trim()).append("=")
-                        .append(URLEncoder.encode(param.getValue().toString(), "UTF-8")).append("&");
+                        .append(URLEncoder.encode(param.getValue().toString(), StandardCharsets.UTF_8)).append("&");
             }
         }
         if (baseString.length() > 0) {

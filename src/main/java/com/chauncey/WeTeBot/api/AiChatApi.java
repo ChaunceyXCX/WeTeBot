@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -24,10 +25,16 @@ public class AiChatApi {
     private OkHttpClient client = new OkHttpClient();
     @Autowired
     private ObjectMapper objectMapper;
+    @Value("${api.chat.url}")
+    private String url;
+    @Value("${api.chat.app_id}")
+    private String appId;
+    @Value("${api.chat.app_key")
+    private String appKey;
 
-    public String chat(ChatParam chatParam) {
-        String url = "https://api.ai.qq.com/fcgi-bin/nlp/nlp_textchat";
+    public String chat(String content) {
         String paramStr = "";
+        ChatParam chatParam = new ChatParam(appId,appKey,content);
         try {
             paramStr = objectMapper.writeValueAsString(chatParam);
         } catch (JsonProcessingException e) {

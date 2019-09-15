@@ -57,6 +57,7 @@ message:
 api:
   # auto chat
   chat:
+    url: 'https://api.ai.qq.com/fcgi-bin/nlp/nlp_textchat'
     app_id: 2119608286
     app_key: dk1DlGphK4WMWpp7
   #weather

@@ -116,7 +116,7 @@ public class MsgHandlerServiceImpl implements IMsgHandlerService {
                     return "好的,通知已停止!!!";
                 }
             }
-            return aiChatApi.chat(new ChatParam(msg.getContent()));
+            return aiChatApi.chat(msg.getContent());
         }
         return null;
     }
