@@ -5,9 +5,9 @@ server:
   #DB--mysql
 spring:
   datasource:
-    url: jdbc:mysql://47.106.222.19:3306/wetebot?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8&serverTimezone=GMT
+    url: jdbc:mysql://localhost:3306/wetebot?useUnicode=true&characterEncoding=UTF-8&characterSetResults=utf8&serverTimezone=GMT
     username: chauncey
-    password: xcx1995
+    password: 111111
     driver-class-name: com.mysql.cj.jdbc.Driver
     max-idle: 10
     max-wait: 10000
@@ -46,23 +46,17 @@ img:
 job:
   root-package: "com.chauncey.WeTeBot.job."
 
-#scheduler
-
-message:
-  default:
-    tousername: wishes
-    master: Chauncey
 
 # api
 api:
   # auto chat
   chat:
     url: 'https://api.ai.qq.com/fcgi-bin/nlp/nlp_textchat'
-    app_id: 2119608286
-    app_key: dk1DlGphK4WMWpp7
+    app_id: 
+    app_key: 
   #weather
   weather:
-    key: 67e4e53c5bfb42039a0a8746a0bfc35b
+    key: 
     url: 'https://free-api.heweather.net/s6/weather/%s?location=%s&key=%s'
     type:
       now: now
