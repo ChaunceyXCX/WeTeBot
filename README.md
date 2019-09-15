@@ -12,9 +12,9 @@ WeChatBot , 集成了定时任务的聊天机器人
 ### java -jar 启动后会在终端输出登录二维码,扫描登录即可
 
 ### 提醒任务设置
-![提醒任务命令]()
+![提醒任务命令](https://github.com/ChaunceyXCX/WeTeBot/blob/master/images/%E6%8F%90%E9%86%92.png)
 ### 天气任务设置
-![天气任务命令]()
+![天气任务命令](https://github.com/ChaunceyXCX/WeTeBot/blob/master/images/%E5%A4%A9%E6%B0%94.png)
 
 
 ## TODO
